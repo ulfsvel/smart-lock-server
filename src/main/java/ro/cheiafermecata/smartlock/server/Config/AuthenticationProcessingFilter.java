@@ -1,6 +1,5 @@
 package ro.cheiafermecata.smartlock.server.Config;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,17 +19,15 @@ public class AuthenticationProcessingFilter extends AbstractPreAuthenticatedProc
 
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
 
-		ObjectMapper mapper = new ObjectMapper();
-
 		HttpServletRequest httpRequest = (HttpServletRequest) servletRequest;
 
-		String user = httpRequest.getHeader("user");
+		String user = httpRequest.getHeader("username");
 		String password = httpRequest.getHeader("password");
 
 		if(user != null && password != null) {
 			List<GrantedAuthority> authorities = new ArrayList<>();
 			authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
-			UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user, user, authorities);
+			UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(user, password, authorities);
 			SecurityContextHolder.getContext().setAuthentication(auth);
 		}
 

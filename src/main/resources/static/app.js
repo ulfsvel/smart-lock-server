@@ -16,7 +16,7 @@ function connect() {
     var socket = new SockJS('/ws');
     stompClient = Stomp.over(socket);
     stompClient.connect({
-            user: document.getElementById("login").value,
+            username: document.getElementById("login").value,
             password: document.getElementById("password").value
         }
 

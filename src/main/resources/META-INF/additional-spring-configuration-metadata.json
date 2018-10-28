@@ -1,0 +1,19 @@
+{
+  "properties": [
+    {
+      "name": "oracle.url",
+      "type": "java.lang.String",
+      "description": "Database connection url."
+    },
+    {
+      "name": "oracle.username",
+      "type": "java.lang.String",
+      "description": "Database username url."
+    },
+    {
+      "name": "oracle.password",
+      "type": "java.lang.String",
+      "description": "Database password url."
+    }
+  ]
+}

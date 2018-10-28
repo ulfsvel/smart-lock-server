@@ -12,6 +12,13 @@ import ro.cheiafermecata.smartlock.server.Websocket.ConnectionHandler;
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    private final ConnectionHandler connectionHandler;
+
+    WebSocketConfig(final ConnectionHandler connectionHandler) {
+        super();
+        this.connectionHandler = connectionHandler;
+    }
+
 	/**
 	 * TODO: 2018-10-28   Configure Simple Broker
 	 */
@@ -29,7 +36,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 	@Override
 	public void configureClientInboundChannel(ChannelRegistration registration) {
-		registration.interceptors(new ConnectionHandler());
+		registration.interceptors(connectionHandler);
 	}
 
 }

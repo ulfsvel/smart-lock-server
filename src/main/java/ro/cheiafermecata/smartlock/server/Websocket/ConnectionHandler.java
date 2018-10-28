@@ -12,18 +12,24 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 import ro.cheiafermecata.smartlock.server.Data.User;
 import ro.cheiafermecata.smartlock.server.Repository.UserRepository;
 
 
+@Component
 public class ConnectionHandler implements ChannelInterceptor {
 
-    @Autowired
-    BCryptPasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    ConnectionHandler(final PasswordEncoder passwordEncoder,  final UserRepository userRepository) {
+        super();
+        this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
+    }
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
@@ -36,7 +42,7 @@ public class ConnectionHandler implements ChannelInterceptor {
             if (!StringUtils.isEmpty(username) && !StringUtils.isEmpty(password)) {
                 Authentication auth = new UsernamePasswordAuthenticationToken(username, password);
                 User user = userRepository.getByEmail(auth.getName());
-                if(!passwordEncoder.matches(user.getPassword(),auth.getCredentials().toString())){
+                if(!passwordEncoder.matches(auth.getCredentials().toString(),user.getPassword())){
                     throw new BadCredentialsException("The user does not exist or the password  is incorrect");
                 }
                 SecurityContextHolder.getContext().setAuthentication(auth);
