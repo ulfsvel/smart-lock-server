@@ -25,7 +25,7 @@ public class ConnectionHandler implements ChannelInterceptor {
 
     private final UserRepository userRepository;
 
-    ConnectionHandler(final PasswordEncoder passwordEncoder,  final UserRepository userRepository) {
+    ConnectionHandler(final PasswordEncoder passwordEncoder, final UserRepository userRepository) {
         super();
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
@@ -36,18 +36,20 @@ public class ConnectionHandler implements ChannelInterceptor {
 
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
-        if (accessor !=  null && StompCommand.CONNECT.equals(accessor.getCommand())) {
+        if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
             String username = accessor.getFirstNativeHeader("username");
             String password = accessor.getFirstNativeHeader("password");
-            if (!StringUtils.isEmpty(username) && !StringUtils.isEmpty(password)) {
-                Authentication auth = new UsernamePasswordAuthenticationToken(username, password);
-                User user = userRepository.getByEmail(auth.getName());
-                if(!passwordEncoder.matches(auth.getCredentials().toString(),user.getPassword())){
-                    throw new BadCredentialsException("The user does not exist or the password  is incorrect");
-                }
-                SecurityContextHolder.getContext().setAuthentication(auth);
-                accessor.setUser(auth);
+            if (!StringUtils.isEmpty(username) || !StringUtils.isEmpty(password)) {
+                throw new BadCredentialsException("Please provide both the user and password in the header");
             }
+            Authentication auth = new UsernamePasswordAuthenticationToken(username, password);
+            User user = userRepository.getByEmail(auth.getName());
+            if (!passwordEncoder.matches(auth.getCredentials().toString(), user.getPassword())) {
+                throw new BadCredentialsException("The user does not exist or the password  is incorrect");
+            }
+            SecurityContextHolder.getContext().setAuthentication(auth);
+            accessor.setUser(auth);
+
         }
 
         return message;
