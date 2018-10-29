@@ -1,4 +1,5 @@
 var stompClient = null;
+var email = '';
 
 function setConnected(connected) {
     $("#connect").prop("disabled", connected);
@@ -13,6 +14,7 @@ function setConnected(connected) {
 }
 
 function connect() {
+    email = document.getElementById("login").value;
     var socket = new SockJS('/ws');
     stompClient = Stomp.over(socket);
     stompClient.connect({
@@ -23,7 +25,7 @@ function connect() {
     , function (frame) {
         setConnected(true);
         console.log('Connected: ' + frame);
-        stompClient.subscribe('/user/queue/reply', function(greeting) {
+        stompClient.subscribe('/user/usersData/influx', function(greeting) {
                                                             showGreeting(JSON.parse(greeting.body).content);
                                                         });
     });
@@ -37,11 +39,13 @@ function disconnect() {
     console.log("Disconnected");
 }
 
-function sendName() {
-    stompClient.send("/app/hello", {
+function sendData() {
+    stompClient.send("/app/sendToUsers", {
     }, JSON.stringify({
-        'name': $("#name").val(),
-        'toUser' : $("#name").val()
+        'email': email,
+        'deviceName' : $("#name").val(),
+        'actionType' : $("#action-type").val(),
+        'actionContent' : $("#action-content").val()
     }));
 }
 
@@ -55,5 +59,5 @@ $(function () {
     });
     $( "#connect" ).click(function() { connect(); });
     $( "#disconnect" ).click(function() { disconnect(); });
-    $( "#send" ).click(function() { sendName(); });
+    $( "#send" ).click(function() { sendData(); });
 });

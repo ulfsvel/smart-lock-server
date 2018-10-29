@@ -39,7 +39,7 @@ public class ConnectionHandler implements ChannelInterceptor {
         if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
             String username = accessor.getFirstNativeHeader("username");
             String password = accessor.getFirstNativeHeader("password");
-            if (!StringUtils.isEmpty(username) || !StringUtils.isEmpty(password)) {
+            if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
                 throw new BadCredentialsException("Please provide both the user and password in the header");
             }
             Authentication auth = new UsernamePasswordAuthenticationToken(username, password);

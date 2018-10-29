@@ -24,14 +24,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	 */
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry config) {
-		config.enableSimpleBroker("/topic", "/queue" ,"/user");
+		config.enableSimpleBroker("/usersData","/devicesData");
 		config.setApplicationDestinationPrefixes("/app");
 		config.setUserDestinationPrefix("/user");
 	}
 
 	public void registerStompEndpoints(StompEndpointRegistry stompEndpointRegistry) {
-		stompEndpointRegistry.addEndpoint("/ws")
-				.withSockJS();
+		stompEndpointRegistry.addEndpoint("/ws").withSockJS();
 	}
 
 	@Override
