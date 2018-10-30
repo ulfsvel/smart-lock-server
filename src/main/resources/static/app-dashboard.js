@@ -3,7 +3,7 @@
 var stompClient = null;
 var email = 'alexbotici@gmail.com';
 var password = 'test';
-
+connect();
 
 function connect() {
     var socket = new SockJS('/ws');
@@ -39,29 +39,84 @@ function sendData() {
 }
 
 function showData(message) {
+    console.log(message);
     if(message.actionType === 'connect'){
         const deviceTemplate = `
-<div data-device="${message.deviceName}" class="col-lg-3 col-md-6 col-sm-6">
-    <div class="card card-stats">
-        <div class="card-header card-header-warning card-header-icon">
-            <div class="card-icon">
-                <i class="material-icons">content_copy</i>
-            </div>
-            <p class="card-category">State</p>
-            <h3 class="card-title">Open</h3>
-        </div>
-        <div class="card-footer">
-            <div class="stats">
-                <i class="material-icons text-danger">warning</i>
-                <a href="#pablo">Lock is open</a>
-            </div>
-        </div>
-    </div>
-</div>`;
+              <div data-device-name="${message.deviceName}" class="card">
+                <div class="card-header card-header-primary">
+                  <h4 class="card-title">${message.deviceName}</h4>
+                  <p class="card-category js-device-header">Syncing</p>
+                </div>
+                <div class="card-body">
+                  <table class="table table-hover">
+                    <thead class="text-warning">
+                      <tr>
+                      <th>Time</th>
+                      <th>Action</th>
+                      <th>Description</th>
+                    </tr>
+                    </thead>
+                    <tbody class="js-device-body">
+                     
+                    </tbody>
+                  </table>
+                </div>
+              </div>`;
         $(".js-devices-container").append(deviceTemplate);
-    }else{
-        console.log(message);
     }
+    processAction(message);
+}
+
+function showNotification(type, message) {
+    $.notify({
+        icon: "add_alert",
+        message: message
+
+    }, {
+        type: type,
+        timer: 3000,
+        placement: {
+            from: 'top',
+            align: 'right'
+        }
+    });
+}
+
+function setStatus(message) {
+    const card = $('[data-device-name="'+message.deviceName+'"]');
+    card.find('.js-device-header').text(message.actionType.toUpperCase());
+    const text = `<tr><td>${message.time}</td><td>${message.actionType.toUpperCase()}</td><td>${message.actionContent}</td></tr>`;
+    let log = card.find('.js-device-body');
+    let logEntries = log.find('tr');
+    if(logEntries.length === 5){
+        logEntries.last().remove();
+    }
+    log.prepend(text);
+}
+
+function processAction(message){
+    let type,text;
+    switch (message.actionType) {
+        case 'connect' :
+            type = 'success';
+            text = `connected!`;
+            break;
+        case 'open' :
+            type = 'info';
+            text = `opened!`;
+            break;
+        case 'close' :
+            type = 'info';
+            text = `closed!`;
+            break;
+        case 'disconnect':
+            type = 'danger';
+            text = `disconnected!`;
+            break;
+    }
+    text = `Device with name [${message.deviceName}] ` + text;
+    showNotification(type,text);
+    setStatus(message);
 }
 
 $(function () {

@@ -1,5 +1,8 @@
 package ro.cheiafermecata.smartlock.server.Data;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class SendToUsersMessage {
 
     private String email;
@@ -10,8 +13,10 @@ public class SendToUsersMessage {
 
     private String actionContent;
 
-    public SendToUsersMessage(){
+    private String time;
 
+    public SendToUsersMessage(){
+        this.time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
     }
 
     public SendToUsersMessage(String email, String deviceName, String actionType, String actionContent) {
@@ -19,6 +24,7 @@ public class SendToUsersMessage {
         this.deviceName = deviceName;
         this.actionType = actionType;
         this.actionContent = actionContent;
+        this.time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
     }
 
     public String getEmail() {
@@ -53,4 +59,7 @@ public class SendToUsersMessage {
         this.actionContent = actionContent;
     }
 
+    public String getTime() {
+        return time;
+    }
 }
