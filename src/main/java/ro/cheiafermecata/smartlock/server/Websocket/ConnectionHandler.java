@@ -1,7 +1,6 @@
 package ro.cheiafermecata.smartlock.server.Websocket;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.simp.stomp.StompCommand;
@@ -15,7 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import ro.cheiafermecata.smartlock.server.Data.User;
-import ro.cheiafermecata.smartlock.server.Repository.UserRepository;
+import ro.cheiafermecata.smartlock.server.Interfaces.Repository.UserRepository;
 
 
 @Component
@@ -42,11 +41,12 @@ public class ConnectionHandler implements ChannelInterceptor {
             if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
                 throw new BadCredentialsException("Please provide both the user and password in the header");
             }
-            Authentication auth = new UsernamePasswordAuthenticationToken(username, password);
-            User user = userRepository.getByEmail(auth.getName());
-            if (!passwordEncoder.matches(auth.getCredentials().toString(), user.getPassword())) {
+            User user = userRepository.getByEmail(username);
+            if (!passwordEncoder.matches(password, user.getPassword())) {
                 throw new BadCredentialsException("The user does not exist or the password  is incorrect");
             }
+            Authentication auth = new UsernamePasswordAuthenticationToken(user.getId(), user.getPassword());
+            //auth.setAuthenticated(true);
             SecurityContextHolder.getContext().setAuthentication(auth);
             accessor.setUser(auth);
 

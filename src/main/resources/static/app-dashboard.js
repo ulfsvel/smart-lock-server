@@ -42,9 +42,9 @@ function showData(message) {
     console.log(message);
     if(message.actionType === 'connect'){
         const deviceTemplate = `
-              <div data-device-name="${message.deviceName}" class="card">
+              <div data-device-name="${message.deviceId}" class="card">
                 <div class="card-header card-header-primary">
-                  <h4 class="card-title">${message.deviceName}</h4>
+                  <h4 class="card-title">${message.deviceId}</h4>
                   <p class="card-category js-device-header">Syncing</p>
                 </div>
                 <div class="card-body">

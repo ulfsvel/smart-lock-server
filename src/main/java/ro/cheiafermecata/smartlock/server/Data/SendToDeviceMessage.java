@@ -3,27 +3,24 @@ package ro.cheiafermecata.smartlock.server.Data;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class SendToUsersMessage {
+public class SendToDeviceMessage {
 
     private Long userId;
 
     private Long deviceId;
 
-    private String actionType;
-
-    private String actionContent;
+    private String action;
 
     private String time;
 
-    public SendToUsersMessage(){
+    public SendToDeviceMessage(){
         this.time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
     }
 
-    public SendToUsersMessage(Long userId, Long deviceId, String actionType, String actionContent) {
+    public SendToDeviceMessage(Long userId, Long deviceId, String action) {
         this.userId = userId;
         this.deviceId = deviceId;
-        this.actionType = actionType;
-        this.actionContent = actionContent;
+        this.action = action;
         this.time = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
     }
 
@@ -43,23 +40,15 @@ public class SendToUsersMessage {
         this.deviceId = deviceId;
     }
 
-    public String getActionType() {
-        return actionType;
-    }
-
-    public void setActionType(String actionType) {
-        this.actionType = actionType;
-    }
-
-    public String getActionContent() {
-        return actionContent;
-    }
-
-    public void setActionContent(String actionContent) {
-        this.actionContent = actionContent;
-    }
-
     public String getTime() {
         return time;
+    }
+
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
     }
 }
