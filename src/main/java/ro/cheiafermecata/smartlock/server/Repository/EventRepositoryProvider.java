@@ -53,8 +53,8 @@ public class EventRepositoryProvider implements EventRepository {
     public void save(Event event) {
         //noinspection RedundantArrayCreation
         jdbcTemplate.update("INSERT INTO " +
-                "EVENTS(USER_ID, DEVICE_ID, EVENT, DESCRIPTION, TIME) " +
-                "VALUES (?, ?, ?, ?, ?)",
+                "EVENTS(USER_ID, DEVICE_ID, EVENT, DESCRIPTION) " +
+                "VALUES (?, ?, ?, ?)",
                 new Object[] {event.getUserId(), event.getDeviceId(), event.getEvent(), event.getDescription()});
     }
 

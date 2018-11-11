@@ -56,10 +56,10 @@
             <div class="container-fluid">
                 <div class="row js-devices-container">
                     <th:block th:each="device : ${devices}">
-                        <div th:attr="data-device-name=${device.key.getId()}" class="card">
+                        <div th:attr="data-device-name=${device.getDevice().getId()}" class="card">
                             <div class="card-header card-header-primary">
-                                <h4 th:text="${device.key.getName()}" class="card-title"></h4>
-                                <p class="card-category js-device-header">Syncing</p>
+                                <h4 th:text="${device.getDevice().getName()}" class="card-title"></h4>
+                                <p th:text="${device.getStatus()}" class="card-category js-device-header"></p>
                             </div>
                             <div class="card-body">
                                 <table class="table table-hover">
@@ -71,7 +71,7 @@
                                     </tr>
                                     </thead>
                                     <tbody class="js-device-body">
-                                        <th:block th:each="event : ${device.value}">
+                                        <th:block th:each="event : ${device.getEvents()}">
                                             <tr>
                                                 <td th:text="${event.getDate()}"></td>
                                                 <td th:text="${event.getEvent()}"></td>
@@ -101,7 +101,7 @@
 <script src="/assets/js/material-dashboard.min.js?v=2.1.0" type="text/javascript"></script>
 <script src="/webjars/sockjs-client/sockjs.min.js"></script>
 <script src="/webjars/stomp-websocket/stomp.min.js"></script>
-<script src="/app-dashboard.js"></script>
+<script src="/assets/js/app-dashboard.js"></script>
 
 
 </body>

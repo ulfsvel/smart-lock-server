@@ -42,8 +42,8 @@ function disconnect() {
 function sendData() {
     stompClient.send("/app/sendToUsers", {
     }, JSON.stringify({
-        'email': email,
-        'deviceName' : $("#name").val(),
+        'userId': $("#user").val(),
+        'deviceId' : $("#device").val(),
         'actionType' : $("#action-type").val(),
         'actionContent' : $("#action-content").val()
     }));

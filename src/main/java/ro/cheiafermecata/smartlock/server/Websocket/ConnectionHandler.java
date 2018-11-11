@@ -1,8 +1,8 @@
 package ro.cheiafermecata.smartlock.server.Websocket;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.MessageHeaders;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
@@ -11,10 +11,12 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import ro.cheiafermecata.smartlock.server.Data.User;
-import ro.cheiafermecata.smartlock.server.Interfaces.Repository.UserRepository;
+import ro.cheiafermecata.smartlock.server.Repository.UserDetailServiceProvider;
+
+import java.security.Principal;
 
 
 @Component
@@ -22,34 +24,37 @@ public class ConnectionHandler implements ChannelInterceptor {
 
     private final PasswordEncoder passwordEncoder;
 
-    private final UserRepository userRepository;
+    private final UserDetailServiceProvider userDetailServiceProvider;
 
-    ConnectionHandler(final PasswordEncoder passwordEncoder, final UserRepository userRepository) {
+    ConnectionHandler(final PasswordEncoder passwordEncoder, UserDetailServiceProvider userDetailServiceProvider) {
         super();
         this.passwordEncoder = passwordEncoder;
-        this.userRepository = userRepository;
+        this.userDetailServiceProvider = userDetailServiceProvider;
     }
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
 
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+        MessageHeaders headers = message.getHeaders();
+        Principal principal = (Principal) headers.get("simpUser");
 
-        if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
+        if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand()) && principal == null) {
+
             String username = accessor.getFirstNativeHeader("username");
             String password = accessor.getFirstNativeHeader("password");
-            if (StringUtils.isEmpty(username) || StringUtils.isEmpty(password)) {
-                throw new BadCredentialsException("Please provide both the user and password in the header");
+
+            UserDetails userDetails = userDetailServiceProvider.loadUserByUsername(username);
+
+            if (!passwordEncoder.matches(password, userDetails.getPassword())) {
+                throw new BadCredentialsException("Authentication failure");
             }
-            User user = userRepository.getByEmail(username);
-            if (!passwordEncoder.matches(password, user.getPassword())) {
-                throw new BadCredentialsException("The user does not exist or the password  is incorrect");
-            }
-            Authentication auth = new UsernamePasswordAuthenticationToken(user.getId(), user.getPassword());
-            //auth.setAuthenticated(true);
+            Authentication auth = new UsernamePasswordAuthenticationToken(
+                    userDetails.getUsername(),
+                    userDetails.getPassword(),
+                    userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(auth);
             accessor.setUser(auth);
-
         }
 
         return message;

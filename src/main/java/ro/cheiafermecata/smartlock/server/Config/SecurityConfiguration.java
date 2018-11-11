@@ -23,9 +23,13 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/assets/**").permitAll()
+                .antMatchers("/webjars/**").permitAll()
                 .antMatchers("/login*").permitAll()
+                .antMatchers("/device*").permitAll()
+                .antMatchers("/ws/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .formLogin()

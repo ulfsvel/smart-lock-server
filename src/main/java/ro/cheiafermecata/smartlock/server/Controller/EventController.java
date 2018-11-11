@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import ro.cheiafermecata.smartlock.server.Data.Device;
+import ro.cheiafermecata.smartlock.server.Data.DeviceOverview;
 import ro.cheiafermecata.smartlock.server.Data.Event;
 import ro.cheiafermecata.smartlock.server.Data.ResponseMessage;
 import ro.cheiafermecata.smartlock.server.Interfaces.Repository.DeviceRepository;
@@ -13,6 +14,7 @@ import ro.cheiafermecata.smartlock.server.Interfaces.Repository.EventRepository;
 
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -36,12 +38,17 @@ public class EventController {
     }
 
     @GetMapping("/api/EventHistoryOverview/")
-    public Map<Device,List<Event>> getEventHistoryOverview(Principal principal){
-        Map<Device,List<Event>> result = new HashMap<>();
+    public List<DeviceOverview> getEventHistoryOverview(Principal principal){
+        List<DeviceOverview> devices = new LinkedList<>();
         for (Device device: deviceRepository.getByUserId(parseLong(principal.getName()))) {
-            result.put(device,eventRepository.getByDeviceId(device.getId(),5));
+            List<Event> events = eventRepository.getByDeviceId(device.getId(),5);
+            devices.add(new DeviceOverview(
+                    device,
+                    events.get(0).getEvent(),
+                    events
+            ));
         }
-        return result;
+        return devices;
     }
 
 }

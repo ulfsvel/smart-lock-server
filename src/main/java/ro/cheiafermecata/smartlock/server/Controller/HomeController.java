@@ -20,10 +20,11 @@ public class HomeController {
     }
 
     @RequestMapping("/")
-    public void index(Principal principal,Map<String, Object> model) {
+    public String index(Principal principal,Map<String, Object> model) {
         model.put("devices",eventController.getEventHistoryOverview(principal));
         model.put("user",userRepository.getById(Long.parseLong(principal.getName())));
         model.put("history",eventController.getEventHistory(principal,1));
+        return "index";
     }
 
 }

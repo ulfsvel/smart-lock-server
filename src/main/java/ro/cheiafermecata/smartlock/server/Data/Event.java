@@ -26,7 +26,7 @@ public class Event {
         this.deviceId = deviceId;
         this.event = event;
         this.description = description;
-        this.time = time;
+        this.time = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date());
     }
 
     public Event(Long userId, Long deviceId, String event, String description, String time) {
@@ -45,12 +45,12 @@ public class Event {
         this.time = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date());
     }
 
-    public Long getId() {
-        return id;
+    public Event(){
+        this.time = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date());
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Long getId() {
+        return id;
     }
 
     public String getEvent() {

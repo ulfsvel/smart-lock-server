@@ -29,7 +29,7 @@ public class MessageController {
         if (!principal.getName().equals(message.getUserId().toString())) {
             throw new BadCredentialsException("The destination user is not allowed for the given credentials");
         }
-        eventRepository.save(new Event(message.getUserId(),message.getDeviceId(),message.getAction(), message.getAction(), message.getTime()));
+        eventRepository.save(new Event(message.getUserId(),message.getDeviceId(),message.getAction(), message.getAction()));
         messagingTemplate.convertAndSendToUser(principal.getName(), "/usersData/influx", message);
     }
 
@@ -38,7 +38,7 @@ public class MessageController {
         if (!principal.getName().equals(message.getUserId().toString())) {
             throw new BadCredentialsException("The destination user is not allowed for the given credentials");
         }
-        eventRepository.save(new Event(message.getUserId(),message.getDeviceId(),message.getActionType(), message.getActionContent(), message.getTime()));
+        eventRepository.save(new Event(message.getUserId(),message.getDeviceId(),message.getActionType(), message.getActionContent()));
         messagingTemplate.convertAndSendToUser(principal.getName(), "/devicesData/influx", message);
     }
 
