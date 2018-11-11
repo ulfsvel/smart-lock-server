@@ -7,4 +7,6 @@ import ro.cheiafermecata.smartlock.server.Data.User;
 public interface UserRepository {
 
     User getByEmail(String email);
+
+    User getById(Long id);
 }

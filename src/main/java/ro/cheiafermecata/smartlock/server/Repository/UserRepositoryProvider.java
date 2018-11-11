@@ -22,4 +22,11 @@ public class UserRepositoryProvider implements UserRepository {
                 (rs, rowNum) -> new User(rs.getLong("id"), rs.getString("email"), rs.getString("password"))
         );
     }
+
+    public User getById(Long id){
+        return jdbcTemplate.queryForObject(
+                "SELECT id, email, password FROM users WHERE id = ? AND ROWNUM = 1", new Object[] { id },
+                (rs, rowNum) -> new User(rs.getLong("id"), rs.getString("email"), rs.getString("password"))
+        );
+    }
 }

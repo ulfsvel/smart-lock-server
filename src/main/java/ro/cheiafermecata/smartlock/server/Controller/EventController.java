@@ -30,12 +30,12 @@ public class EventController {
         this.deviceRepository = deviceRepository;
     }
 
-    @GetMapping("/EventHistory/{page}/")
+    @GetMapping("/api/EventHistory/{page}/")
     public List<Event> getEventHistory(Principal principal, @PathVariable(name = "page") int page){
         return eventRepository.getByUserIdAtPage(parseLong(principal.getName()),page);
     }
 
-    @GetMapping("/EventHistoryOverview/")
+    @GetMapping("/api/EventHistoryOverview/")
     public Map<Device,List<Event>> getEventHistoryOverview(Principal principal){
         Map<Device,List<Event>> result = new HashMap<>();
         for (Device device: deviceRepository.getByUserId(parseLong(principal.getName()))) {
