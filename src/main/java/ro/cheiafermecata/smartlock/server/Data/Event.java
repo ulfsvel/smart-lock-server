@@ -2,6 +2,8 @@ package ro.cheiafermecata.smartlock.server.Data;
 
 
 import javax.persistence.Entity;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Entity
 public class Event {
@@ -33,6 +35,14 @@ public class Event {
         this.event = event;
         this.description = description;
         this.time = time;
+    }
+
+    public Event(Long userId, Long deviceId, String event, String description) {
+        this.userId = userId;
+        this.deviceId = deviceId;
+        this.event = event;
+        this.description = description;
+        this.time = new SimpleDateFormat("yyyy-MM-dd HH:mm").format(new Date());
     }
 
     public Long getId() {

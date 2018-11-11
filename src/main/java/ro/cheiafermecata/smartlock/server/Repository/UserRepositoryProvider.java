@@ -16,6 +16,7 @@ public class UserRepositoryProvider implements UserRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public User getByEmail(String email){
         return jdbcTemplate.queryForObject(
                 "SELECT id, email, password FROM users WHERE email = ? AND ROWNUM = 1", new Object[] { email },
@@ -23,10 +24,12 @@ public class UserRepositoryProvider implements UserRepository {
         );
     }
 
+    @Override
     public User getById(Long id){
         return jdbcTemplate.queryForObject(
                 "SELECT id, email, password FROM users WHERE id = ? AND ROWNUM = 1", new Object[] { id },
                 (rs, rowNum) -> new User(rs.getLong("id"), rs.getString("email"), rs.getString("password"))
         );
     }
+
 }
