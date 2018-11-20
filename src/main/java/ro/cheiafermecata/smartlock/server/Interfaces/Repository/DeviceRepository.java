@@ -10,4 +10,6 @@ public interface DeviceRepository {
 
     List<Device> getByUserId(Long id);
 
+    Device getById(Long id);
+
 }

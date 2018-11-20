@@ -24,4 +24,11 @@ public class DeviceRepositoryProvider implements DeviceRepository {
         );
     }
 
+    public Device getById(Long id){
+        return jdbcTemplate.queryForObject(
+                "SELECT ID, USER_ID, NAME FROM DEVICES WHERE ID = ?", new Object[] { id },
+                (rs, rowNum) -> new Device(rs.getLong("id"), rs.getLong("user_id"), rs.getString("name"))
+        );
+    }
+
 }

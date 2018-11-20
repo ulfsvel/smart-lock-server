@@ -1,6 +1,7 @@
 package ro.cheiafermecata.smartlock.server.Controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ro.cheiafermecata.smartlock.server.Interfaces.Repository.UserRepository;
 
@@ -23,8 +24,14 @@ public class HomeController {
     public String index(Principal principal,Map<String, Object> model) {
         model.put("devices",eventController.getEventHistoryOverview(principal));
         model.put("user",userRepository.getById(Long.parseLong(principal.getName())));
-        model.put("history",eventController.getEventHistory(principal,1));
         return "index";
+    }
+
+    @RequestMapping({"/eventHistory/{page}","/eventHistory"})
+    public String eventHistory(Principal principal, Map<String, Object> model, @PathVariable(name = "page", required = false ) int page){
+        model.put("pageNumber",page);
+        model.put("history",eventController.getEventHistory(principal,0));
+        return "eventHistory";
     }
 
 }

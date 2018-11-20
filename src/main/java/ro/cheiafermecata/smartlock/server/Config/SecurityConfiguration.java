@@ -35,7 +35,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .formLogin()
                 .loginPage("/login")
                 .loginProcessingUrl("/j_spring_security_check")
-                /* @Todo show error on fail */
                 .failureUrl("/login?error")
                 .defaultSuccessUrl("/")
                 .permitAll()

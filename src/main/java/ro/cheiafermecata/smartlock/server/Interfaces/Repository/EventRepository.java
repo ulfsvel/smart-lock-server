@@ -12,5 +12,7 @@ public interface EventRepository {
 
     List<Event> getByUserIdAtPage(Long userId, int page);
 
+    Long getPageCountByUserId(Long userId);
+
     void save(Event event);
 }

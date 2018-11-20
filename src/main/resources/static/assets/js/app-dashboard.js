@@ -1,45 +1,55 @@
+const subscribeUrl = '/user/devicesData/influx';
+const wsUrl = '/ws';
+const infoUrl = '/api/DeviceDetails/';
+const sendUrl = 'app/sendToDevices';
 
+class AppDashboard {
 
-var stompClient = null;
-connect();
-
-function connect() {
-    var socket = new SockJS('/ws');
-    stompClient = Stomp.over(socket);
-    stompClient.connect({}
-        , function (frame) {
-            console.log('Connected: ' + frame);
-            stompClient.subscribe('/user/devicesData/influx', function(message) {
-                showData(JSON.parse(message.body));
+    constructor(Stomp,wsUrl, subscribeUrl, sendUrl, render) {
+        const parent = this;
+        this.sendUrl = sendUrl;
+        this.socket = new SockJS('/ws');
+        this.stompClient = Stomp.over(this.socket);
+        this.stompClient.connect(
+            {},
+            function (frame) {
+                console.log('Connected: ' + frame);
+                parent.stompClient.subscribe(subscribeUrl, function (message) {
+                    render.setMessage(JSON.parse(message.body));
+                });
             });
-        });
-}
-
-function disconnect() {
-    if (stompClient != null) {
-        stompClient.disconnect();
     }
-    setConnected(false);
-    console.log("Disconnected");
+
+    sendData(jsonData) {
+        this.stompClient.send(
+            this.sendUrl,
+            {},
+            JSON.stringify(jsonData)
+        );
+    }
+
 }
 
-function sendData() {
-    stompClient.send("/app/sendToUsers", {
-    }, JSON.stringify({
-        'email': email,
-        'deviceName' : $("#name").val(),
-        'actionType' : $("#action-type").val(),
-        'actionContent' : $("#action-content").val()
-    }));
-}
+class renderAppDashboardMessage {
 
-function showData(message) {
-    console.log(message);
-    if(message.actionType === 'connect'){
-        const deviceTemplate = `
-              <div data-device-name="${message.deviceId}" class="card">
+    constructor(infoUrl) {
+        this.infoUrl = infoUrl;
+        this.card = null;
+    }
+
+    setMessage(message) {
+        this.message = message;
+        if (this.message.actionType === 'new') {
+            const baseClass = this;
+            $.get({
+                url: this.infoUrl + baseClass.message.deviceId,
+                data: {},
+                dataType: 'json',
+            }).done(function (data) {
+                const deviceTemplate = `
+              <div data-device-name="${data.deviceId}" class="card">
                 <div class="card-header card-header-primary">
-                  <h4 class="card-title">${message.deviceId}</h4>
+                  <h4 class="card-title js-device-name">${data.deviceName}</h4>
                   <p class="card-category js-device-header">Syncing</p>
                 </div>
                 <div class="card-body">
@@ -57,68 +67,69 @@ function showData(message) {
                   </table>
                 </div>
               </div>`;
-        $(".js-devices-container").append(deviceTemplate);
-    }
-    processAction(message);
-}
+                $(".js-devices-container").append(deviceTemplate);
+                baseClass.card = $('[data-device-name="' + data.deviceId + '"]');
+                baseClass.processAction();
+            });
 
-function showNotification(type, message) {
-    $.notify({
-        icon: "add_alert",
-        message: message
-
-    }, {
-        type: type,
-        timer: 3000,
-        placement: {
-            from: 'top',
-            align: 'right'
         }
-    });
-}
-
-function setStatus(message) {
-    const card = $('[data-device-name="'+message.deviceId+'"]');
-    card.find('.js-device-header').text(message.actionType.toUpperCase());
-    const text = `<tr><td>${message.time}</td><td>${message.actionType.toUpperCase()}</td><td>${message.actionContent}</td></tr>`;
-    let log = card.find('.js-device-body');
-    let logEntries = log.find('tr');
-    if(logEntries.length === 5){
-        logEntries.last().remove();
+        this.card = $('[data-device-name="' + this.message.deviceId + '"]');
+        this.processAction();
+        console.log(message);
     }
-    log.prepend(text);
-}
 
-function processAction(message){
-    let type,text;
-    switch (message.actionType) {
-        case 'connect' :
-            type = 'success';
-            text = `connected!`;
-            break;
-        case 'open' :
-            type = 'info';
-            text = `opened!`;
-            break;
-        case 'close' :
-            type = 'info';
-            text = `closed!`;
-            break;
-        case 'disconnect':
-            type = 'danger';
-            text = `disconnected!`;
-            break;
+    processAction() {
+        let type, text;
+        switch (this.message.actionType) {
+            case 'connect' :
+                type = 'success';
+                text = `connected!`;
+                break;
+            case 'open' :
+                type = 'info';
+                text = `opened!`;
+                break;
+            case 'close' :
+                type = 'info';
+                text = `closed!`;
+                break;
+            case 'disconnect':
+                type = 'danger';
+                text = `disconnected!`;
+                break;
+        }
+        const deviceName = this.card.find('js-device-name').html();
+        text = `Device with name [${deviceName}] ` + text;
+        renderAppDashboardMessage.showNotification(type, text);
+        this.setStatus();
     }
-    text = `Device with name [${message.deviceId}] ` + text;
-    showNotification(type,text);
-    setStatus(message);
+
+    static showNotification(type, text) {
+        $.notify({
+            icon: "add_alert",
+            message: text
+
+        }, {
+            type: type,
+            timer: 3000,
+            placement: {
+                from: 'top',
+                align: 'right'
+            }
+        });
+    }
+
+    setStatus() {
+        this.card.find('.js-device-header').text(this.message.actionType.toUpperCase());
+        const text = `<tr><td>${this.message.time}</td><td>${this.message.actionType.toUpperCase()}</td><td>${this.message.actionContent}</td></tr>`;
+        let log = this.card.find('.js-device-body');
+        let logEntries = log.find('tr');
+        if (logEntries.length === 5) {
+            logEntries.last().remove();
+        }
+        log.prepend(text);
+    }
+
 }
 
-$(function () {
-    $("form").on('submit', function (e) {
-        e.preventDefault();
-    });
-    $( "#connect" ).click(function() { connect(); });
-    $( "#disconnect" ).click(function() { disconnect(); });
-    $( "#send" ).click(function() { sendData(); });
-});
+const dashboard = new AppDashboard(Stomp,wsUrl, subscribeUrl, sendUrl, new renderAppDashboardMessage(infoUrl));
