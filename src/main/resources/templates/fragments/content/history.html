@@ -1,0 +1,47 @@
+<div xmlns:th="http://www.thymeleaf.org" class="row js-devices-container">
+
+    <div class="card">
+        <div class="card-header card-header-primary">
+            <div>
+                <h4 class="card-title">General History</h4>
+            </div>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead class="text-warning">
+                <tr>
+                    <th class="w-20 text-justify">Time</th>
+                    <th class="w-20 text-justify">Device</th>
+                    <th class="w-20 text-justify">Action</th>
+                    <th class="w-40 text-justify">Description</th>
+                </tr>
+                </thead>
+                <tbody class="js-device-body">
+                <th:block th:each="event : ${history.getRight()}">
+                    <tr>
+                        <td class="w-20" th:text="${event.getEventTime()}"></td>
+                        <td class="w-20" th:text="${deviceIdToName.get(event.getDeviceId())}"></td>
+                        <td class="w-20" th:text="${event.getEvent()}"></td>
+                        <td class="w-40" th:text="${event.getDescription()}"></td>
+                    </tr>
+                </th:block>
+                </tbody>
+            </table>
+            <div>
+                <th:block th:if="!${pageNumber.equals(1)}">
+                    <a class="btn btn-primary" th:href="${#strings.concat('/eventHistory/', pageNumber-1)}">
+                        <i class="material-icons">keyboard_arrow_left</i>
+                    </a>
+                </th:block>
+                <th:block th:if="!${history.getLeft().equals(1)}">
+                    <span th:text="${pageNumber}" class="btn btn-primary"></span>
+                </th:block>
+                <th:block th:if="!${pageNumber.equals(history.getLeft())}">
+                    <a class="btn btn-primary" th:href="${#strings.concat('/eventHistory/', pageNumber+1)}">
+                        <i class="material-icons">keyboard_arrow_right</i>
+                    </a>
+                </th:block>
+            </div>
+        </div>
+    </div>
+</div>

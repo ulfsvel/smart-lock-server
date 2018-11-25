@@ -2,11 +2,9 @@ package ro.cheiafermecata.smartlock.server.Controller;
 
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Controller;
-import ro.cheiafermecata.smartlock.server.Data.Event;
-import ro.cheiafermecata.smartlock.server.Data.SendToDeviceMessage;
-import ro.cheiafermecata.smartlock.server.Data.SendToUsersMessage;
+import ro.cheiafermecata.smartlock.server.Data.*;
+import ro.cheiafermecata.smartlock.server.Interfaces.Repository.DeviceRepository;
 import ro.cheiafermecata.smartlock.server.Interfaces.Repository.EventRepository;
 import java.security.Principal;
 
@@ -18,28 +16,59 @@ public class MessageController {
 
     private final EventRepository eventRepository;
 
-    MessageController(SimpMessagingTemplate messagingTemplate, EventRepository eventRepository) {
+    private final DeviceRepository deviceRepository;
+
+    MessageController(SimpMessagingTemplate messagingTemplate, EventRepository eventRepository, DeviceRepository deviceRepository) {
         this.messagingTemplate = messagingTemplate;
         this.eventRepository = eventRepository;
+        this.deviceRepository = deviceRepository;
     }
 
-
+    /**
+     * Sends the message to the device identified by {userId}-{deviceId}
+     * @param principal the logged in user, the format is {userId}
+     * @param message the message to send to the device
+     */
     @MessageMapping("/sendToDevices")
-    public void sendToDevice(Principal principal, SendToDeviceMessage message) {
-        if (!principal.getName().equals(message.getUserId().toString())) {
-            throw new BadCredentialsException("The destination user is not allowed for the given credentials");
+    public void sendToDevices(Principal principal, SendToDeviceMessage message) {
+        Device device = deviceRepository.getById(message.getDeviceId());
+        try{
+            eventRepository.save(new Event(device.getUserId(),message.getDeviceId(),Events.valueOf(message.getAction()).toString(), message.getAction(),message.getTime()));
+            messagingTemplate.convertAndSendToUser(principal.getName()+"-"+message.getDeviceId(), "/usersData/influx", message);
+        }catch (IllegalArgumentException e){
+            eventRepository.save(new Event(device.getUserId(),message.getDeviceId(),Events.ERROR.toString(), "Invalid action exception"));
+            messagingTemplate.convertAndSendToUser(
+                    principal.getName(),
+                    "/devicesData/influx",
+                    new SendToUsersMessage(
+                            Events.ERROR.toString(),
+                            "Invalid action exception",
+                            device.getId(),
+                            device.getName()
+                    )
+            );
         }
-        eventRepository.save(new Event(message.getUserId(),message.getDeviceId(),message.getAction(), message.getAction(),message.getTime()));
-        messagingTemplate.convertAndSendToUser(principal.getName(), "/usersData/influx", message);
     }
 
+    /**
+     * Sends the message to the user identified by {userId}
+     * @param principal the logged in device, the format is {userId}-{deviceId}
+     * @param message the message to send to the user
+     */
     @MessageMapping("/sendToUsers")
     public void sendToUsers(Principal principal, SendToUsersMessage message) {
-        if (!principal.getName().equals(message.getUserId().toString())) {
-            throw new BadCredentialsException("The destination user is not allowed for the given credentials");
+        String[] principalUserIdDeviceId = principal.getName().split("-");
+        Long userId = Long.parseLong(principalUserIdDeviceId[0]);
+        Long deviceId = Long.parseLong(principalUserIdDeviceId[1]);
+        message.setDeviceId(deviceId);
+        message.setDeviceName(deviceRepository.getById(deviceId).getName());
+        try{
+            eventRepository.save(new Event(userId,message.getDeviceId(), Events.valueOf(message.getActionType()).toString(), message.getActionContent(),message.getTime()));
+            messagingTemplate.convertAndSendToUser(userId.toString(), "/devicesData/influx", message);
+        }catch (IllegalArgumentException e){
+            eventRepository.save(new Event(userId,message.getDeviceId(),Events.ERROR.toString(), "Invalid action exception"));
+            messagingTemplate.convertAndSendToUser(principal.getName(), "/devicesData/influx", message);
         }
-        eventRepository.save(new Event(message.getUserId(),message.getDeviceId(),message.getActionType(), message.getActionContent(),message.getTime()));
-        messagingTemplate.convertAndSendToUser(principal.getName(), "/devicesData/influx", message);
     }
 
 }

@@ -8,9 +8,9 @@ import java.util.List;
 @Repository
 public interface EventRepository {
 
-    List<Event> getByDeviceId(Long deviceId, int limit);
+    List<Event> getLatestByDeviceId(Long deviceId, int limit);
 
-    List<Event> getByUserIdAtPage(Long userId, int page);
+    List<Event> getByUserIdAtPage(Long userId, Long page);
 
     Long getPageCountByUserId(Long userId);
 

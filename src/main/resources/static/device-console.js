@@ -19,7 +19,8 @@ function connect() {
     stompClient = Stomp.over(socket);
     stompClient.connect({
             username: document.getElementById("login").value,
-            password: document.getElementById("password").value
+            password: document.getElementById("password").value,
+            device: document.getElementById("device").value
         }
 
     , function (frame) {
@@ -42,8 +43,6 @@ function disconnect() {
 function sendData() {
     stompClient.send("/app/sendToUsers", {
     }, JSON.stringify({
-        'userId': $("#user").val(),
-        'deviceId' : $("#device").val(),
         'actionType' : $("#action-type").val(),
         'actionContent' : $("#action-content").val()
     }));

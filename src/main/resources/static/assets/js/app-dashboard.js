@@ -1,11 +1,11 @@
 const subscribeUrl = '/user/devicesData/influx';
 const wsUrl = '/ws';
-const infoUrl = '/api/DeviceDetails/';
-const sendUrl = 'app/sendToDevices';
+const infoUrl = '/api/deviceDetails/';
+const sendUrl = '/app/sendToDevices';
 
 class AppDashboard {
 
-    constructor(Stomp,wsUrl, subscribeUrl, sendUrl, render) {
+    constructor(Stomp, wsUrl, subscribeUrl, sendUrl, render) {
         const parent = this;
         this.sendUrl = sendUrl;
         this.socket = new SockJS('/ws');
@@ -30,7 +30,7 @@ class AppDashboard {
 
 }
 
-class renderAppDashboardMessage {
+class RenderAppDashboardMessage {
 
     constructor(infoUrl) {
         this.infoUrl = infoUrl;
@@ -46,41 +46,21 @@ class renderAppDashboardMessage {
                 data: {},
                 dataType: 'json',
             }).done(function (data) {
-                const deviceTemplate = `
-              <div data-device-name="${data.deviceId}" class="card">
-                <div class="card-header card-header-primary">
-                  <h4 class="card-title js-device-name">${data.deviceName}</h4>
-                  <p class="card-category js-device-header">Syncing</p>
-                </div>
-                <div class="card-body">
-                  <table class="table table-hover">
-                    <thead class="text-warning">
-                      <tr>
-                      <th>Time</th>
-                      <th>Action</th>
-                      <th>Description</th>
-                    </tr>
-                    </thead>
-                    <tbody class="js-device-body">
-                     
-                    </tbody>
-                  </table>
-                </div>
-              </div>`;
-                $(".js-devices-container").append(deviceTemplate);
+                $(".js-devices-container").append(data.card);
                 baseClass.card = $('[data-device-name="' + data.deviceId + '"]');
                 baseClass.processAction();
             });
 
+        }else{
+            this.card = $('[data-device-name="' + this.message.deviceId + '"]');
+            this.processAction();
         }
-        this.card = $('[data-device-name="' + this.message.deviceId + '"]');
-        this.processAction();
         console.log(message);
     }
 
     processAction() {
         let type, text;
-        switch (this.message.actionType) {
+        switch (this.message.actionType.toLowerCase()) {
             case 'connect' :
                 type = 'success';
                 text = `connected!`;
@@ -88,19 +68,27 @@ class renderAppDashboardMessage {
             case 'open' :
                 type = 'info';
                 text = `opened!`;
+                Action.setOpenIcon(this.card);
                 break;
             case 'close' :
                 type = 'info';
                 text = `closed!`;
+                Action.setLockedIcon(this.card);
+                break;
+            case 'error' :
+                type = 'danger';
+                text = `was unable to perform an action!`;
+                Action.setErrorIcon(this.card);
                 break;
             case 'disconnect':
                 type = 'danger';
                 text = `disconnected!`;
+                Action.setErrorIcon(this.card);
                 break;
         }
-        const deviceName = this.card.find('js-device-name').html();
+        const deviceName = this.card.find('.js-device-name').html();
         text = `Device with name [${deviceName}] ` + text;
-        renderAppDashboardMessage.showNotification(type, text);
+        RenderAppDashboardMessage.showNotification(type, text);
         this.setStatus();
     }
 
@@ -120,8 +108,8 @@ class renderAppDashboardMessage {
     }
 
     setStatus() {
-        this.card.find('.js-device-header').text(this.message.actionType.toUpperCase());
-        const text = `<tr><td>${this.message.time}</td><td>${this.message.actionType.toUpperCase()}</td><td>${this.message.actionContent}</td></tr>`;
+        this.card.find('.js-device-header').text(this.message.actionType);
+        const text = `<tr><td>${this.message.time}</td><td>${this.message.actionType}</td><td>${this.message.actionContent}</td></tr>`;
         let log = this.card.find('.js-device-body');
         let logEntries = log.find('tr');
         if (logEntries.length === 5) {
@@ -132,4 +120,53 @@ class renderAppDashboardMessage {
 
 }
 
-const dashboard = new AppDashboard(Stomp,wsUrl, subscribeUrl, sendUrl, new renderAppDashboardMessage(infoUrl));
+class Action {
+
+    constructor(appDashboard) {
+        $('.content').on('click','.js-device-card',function () {
+            Action.onClickAction($(this),appDashboard);
+        });
+    }
+
+    static onClickAction(element, appDashboard) {
+        if(element.attr('data-action-pending') === true){
+            return;
+        }
+        Action.setLoadingIcon(element);
+        appDashboard.sendData({
+            deviceId : element.attr('data-device-name'),
+            action : Action.getOppositeState(element.data('currentState'))
+        });
+    }
+
+    static setLoadingIcon(element) {
+        element.find('.js-device-action').html('autorenew');
+        element.attr('data-action-pending',true);
+    }
+
+    static setOpenIcon(element) {
+        element.find('.js-device-action').html('lock_open');
+        element.attr('data-action-pending',false);
+    }
+
+    static setLockedIcon(element) {
+        element.find('.js-device-action').html('lock');
+        element.attr('data-action-pending',false);
+    }
+
+    static setErrorIcon(element) {
+        element.find('.js-device-action').html('error');
+        element.attr('data-action-pending',false);
+    }
+
+    static getOppositeState(state){
+        if(state === 'open'){
+            return 'close';
+        }else {
+            return 'open';
+        }
+    }
+}
+
+const appDashboard = new AppDashboard(Stomp, wsUrl, subscribeUrl, sendUrl, new RenderAppDashboardMessage(infoUrl));
+const action = new Action(appDashboard);

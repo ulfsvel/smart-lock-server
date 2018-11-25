@@ -7,16 +7,16 @@ public class Device {
 
     private Long id;
 
-    private Long usersId;
+    private Long userId;
 
-    public Device(Long usersId, String name) {
-        this.usersId = usersId;
+    public Device(Long userId, String name) {
+        this.userId = userId;
         this.name = name;
     }
 
-    public Device(Long id, Long usersId, String name) {
+    public Device(Long id, Long userId, String name) {
         this.id = id;
-        this.usersId = usersId;
+        this.userId = userId;
         this.name = name;
     }
 
@@ -30,12 +30,12 @@ public class Device {
         this.id = id;
     }
 
-    public Long getUsersId() {
-        return usersId;
+    public Long getUserId() {
+        return userId;
     }
 
-    public void setUsersId(Long usersId) {
-        this.usersId = usersId;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getName() {

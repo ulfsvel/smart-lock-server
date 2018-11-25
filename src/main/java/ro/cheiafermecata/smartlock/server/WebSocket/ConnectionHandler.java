@@ -1,4 +1,4 @@
-package ro.cheiafermecata.smartlock.server.Websocket;
+package ro.cheiafermecata.smartlock.server.WebSocket;
 
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -42,6 +42,7 @@ public class ConnectionHandler implements ChannelInterceptor {
         if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand()) && principal == null) {
 
             String username = accessor.getFirstNativeHeader("username");
+            String device = accessor.getFirstNativeHeader("device");
             String password = accessor.getFirstNativeHeader("password");
 
             UserDetails userDetails = userDetailServiceProvider.loadUserByUsername(username);
@@ -50,7 +51,7 @@ public class ConnectionHandler implements ChannelInterceptor {
                 throw new BadCredentialsException("Authentication failure");
             }
             Authentication auth = new UsernamePasswordAuthenticationToken(
-                    userDetails.getUsername(),
+                    userDetails.getUsername()+"-"+device,
                     userDetails.getPassword(),
                     userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(auth);

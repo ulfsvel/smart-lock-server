@@ -7,6 +7,7 @@ import ro.cheiafermecata.smartlock.server.Data.Device;
 import ro.cheiafermecata.smartlock.server.Interfaces.Repository.DeviceRepository;
 
 import java.security.Principal;
+import java.util.List;
 
 
 @Controller
@@ -19,8 +20,13 @@ public class DeviceController {
     }
 
     @GetMapping("/api/deviceDetails/{deviceId}")
-    public Device getEventHistory(Principal principal, @PathVariable(name = "deviceId") Long deviceId){
+    public Device getDevice(Principal principal, @PathVariable(name = "deviceId") Long deviceId){
         return deviceRepository.getById(deviceId);
+    }
+
+    @GetMapping("/api/deviceDetails")
+    public List<Device> getDevices(Principal principal){
+        return deviceRepository.getByUserId(Long.parseLong(principal.getName()));
     }
 
 }

@@ -30,7 +30,7 @@ public class EventController {
     }
 
     @GetMapping("/api/eventHistory/{page}")
-    public Pair<Long,List<Event>> getEventHistory(Principal principal, @PathVariable(name = "page") int page){
+    public Pair<Long,List<Event>> getEventHistory(Principal principal, @PathVariable(name = "page") Long page){
         return new ImmutablePair<>(eventRepository.getPageCountByUserId(parseLong(principal.getName())),eventRepository.getByUserIdAtPage(parseLong(principal.getName()),page));
     }
 
@@ -38,7 +38,7 @@ public class EventController {
     public List<DeviceOverview> getEventHistoryOverview(Principal principal){
         List<DeviceOverview> devices = new LinkedList<>();
         for (Device device: deviceRepository.getByUserId(parseLong(principal.getName()))) {
-            List<Event> events = eventRepository.getByDeviceId(device.getId(),5);
+            List<Event> events = eventRepository.getLatestByDeviceId(device.getId(),5);
             devices.add(new DeviceOverview(
                     device,
                     events.isEmpty() ? "New Device" : events.get(0).getEvent(),

@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public class EventRepositoryProvider implements EventRepository {
 
-    private static final int PAGE_SIZE = 20;
+    private static final Long PAGE_SIZE = 20L;
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -32,25 +32,26 @@ public class EventRepositoryProvider implements EventRepository {
         );
     }
 
-    public List<Event> getByDeviceId(Long deviceId, int limit) {
+    public List<Event> getLatestByDeviceId(Long deviceId, int limit) {
         return jdbcTemplate.query(
-                "SELECT ID, USER_ID, DEVICE_ID, EVENT, DESCRIPTION, TO_CHAR(EVENT_TIME,'YYYY-MM-dd HH24:MI:SS') FORMATTED_TIME FROM EVENTS WHERE DEVICE_ID = ? AND ROWNUM <= ? ORDER BY EVENT_TIME DESC", new Object[]{deviceId, limit},
+                "SELECT ID, USER_ID, DEVICE_ID, EVENT, DESCRIPTION, TO_CHAR(EVENT_TIME,'YYYY-MM-dd HH24:MI:SS') FORMATTED_TIME FROM EVENTS WHERE DEVICE_ID = ? AND ROWNUM <= ? ORDER BY ID DESC", new Object[]{deviceId, limit},
                 this::mapToEvent
         );
     }
 
 
-    public List<Event> getByUserIdAtPage(Long userId, int page) {
+    public List<Event> getByUserIdAtPage(Long userId, Long page) {
+        page -= 1;
         return jdbcTemplate.query(
-                "SELECT ID, USER_ID, DEVICE_ID, EVENT, DESCRIPTION, TO_CHAR(EVENT_TIME,'YYYY-MM-dd HH24:MI:SS') FORMATTED_TIME FROM EVENTS WHERE USER_ID = ? AND ROWNUM > ? AND ROWNUM < ? ORDER BY EVENT_TIME DESC", new Object[]{userId, page, page + PAGE_SIZE},
+                "SELECT * FROM(SELECT ID, USER_ID, DEVICE_ID, EVENT, DESCRIPTION, TO_CHAR(EVENT_TIME,'YYYY-MM-dd HH24:MI:SS') FORMATTED_TIME, ROWNUM AS CNT FROM EVENTS WHERE USER_ID = ? ORDER BY ID DESC) WHERE CNT BETWEEN ? AND ?", new Object[]{userId, (page * PAGE_SIZE) + 1, (page + 1) * PAGE_SIZE},
                 this::mapToEvent
         );
     }
 
     public Long getPageCountByUserId(Long userId) {
         return jdbcTemplate.queryForObject(
-                "SELECT COUNT(1) FROM EVENTS WHERE USER_ID = ?", new Object[]{userId},
-                (rs, rowNum) -> (rs.getLong("pages") / PAGE_SIZE)
+                "SELECT COUNT(1) AS PAGES FROM EVENTS WHERE USER_ID = ?", new Object[]{userId},
+                (rs, rowNum) -> (rs.getLong("pages") / PAGE_SIZE + 1)
         );
     }
 
@@ -63,7 +64,7 @@ public class EventRepositoryProvider implements EventRepository {
                 event.getDeviceId(),
                 event.getEvent(),
                 event.getDescription(),
-                event.getDate()
+                event.getEventTime()
         );
     }
 

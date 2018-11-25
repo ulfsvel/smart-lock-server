@@ -18,7 +18,7 @@ public class Event {
 
     private String description;
 
-    private String time;
+    private String eventTime;
 
     public Event(Long id, Long userId, Long deviceId, String event, String description, String time) {
         this.id = id;
@@ -26,7 +26,7 @@ public class Event {
         this.deviceId = deviceId;
         this.event = event;
         this.description = description;
-        this.time = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS").format(new Date());
+        this.eventTime = time;
     }
 
     public Event(Long userId, Long deviceId, String event, String description, String time) {
@@ -34,7 +34,7 @@ public class Event {
         this.deviceId = deviceId;
         this.event = event;
         this.description = description;
-        this.time = time;
+        this.eventTime = time;
     }
 
     public Event(Long userId, Long deviceId, String event, String description) {
@@ -42,11 +42,11 @@ public class Event {
         this.deviceId = deviceId;
         this.event = event;
         this.description = description;
-        this.time = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS").format(new Date());
+        this.eventTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS").format(new Date());
     }
 
     public Event(){
-        this.time = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS").format(new Date());
+        this.eventTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:SS").format(new Date());
     }
 
     public Long getId() {
@@ -86,11 +86,11 @@ public class Event {
     }
 
 
-    public String getDate() {
-        return time;
+    public String getEventTime() {
+        return eventTime;
     }
 
-    public void setDate(String time) {
-        this.time = time;
+    public void setEventTime(String time) {
+        this.eventTime = time;
     }
 }
