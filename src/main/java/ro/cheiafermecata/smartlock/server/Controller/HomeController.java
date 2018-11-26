@@ -37,9 +37,10 @@ public class HomeController {
     @RequestMapping({"/eventHistory/{page}","/eventHistory"})
     public String eventHistory(Principal principal, Map<String, Object> model, @PathVariable(name = "page", required = false ) Long page){
         model.put("content","history");
-        if(page == null){
-            page = 1L;
-        }
+
+        Long pageCount = eventController.getEventHistoryPageCount(principal);
+        page = HomeController.preparePageNumber(page,pageCount);
+
         model.put("pageNumber",page);
         Map<Long,String> deviceIdToName = new HashMap<>();
         for (Device device : deviceController.getDevices(principal)){
@@ -47,7 +48,21 @@ public class HomeController {
         }
         model.put("deviceIdToName",deviceIdToName);
         model.put("history",eventController.getEventHistory(principal,page));
+        model.put("pageCount",pageCount);
         return "index";
+    }
+
+    private static Long preparePageNumber(Long pageNumber, Long pageCount){
+        if(pageNumber == null){
+            return 1L;
+        }
+        if(pageNumber < 1){
+            return 1L;
+        }
+        if(pageNumber > pageCount){
+            return pageCount;
+        }
+        return pageNumber;
     }
 
 }

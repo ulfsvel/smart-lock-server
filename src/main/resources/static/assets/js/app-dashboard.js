@@ -60,30 +60,41 @@ class RenderAppDashboardMessage {
 
     processAction() {
         let type, text;
-        switch (this.message.actionType.toLowerCase()) {
-            case 'connect' :
+        switch (this.message.actionType) {
+            case 'CONNECT' :
                 type = 'success';
                 text = `connected!`;
+                Action.setConnectIcon(this.card);
                 break;
-            case 'open' :
+            case 'OPEN' :
                 type = 'info';
                 text = `opened!`;
                 Action.setOpenIcon(this.card);
                 break;
-            case 'close' :
+            case 'CLOSE' :
                 type = 'info';
                 text = `closed!`;
                 Action.setLockedIcon(this.card);
                 break;
-            case 'error' :
+            case 'ERROR' :
                 type = 'danger';
                 text = `was unable to perform an action!`;
                 Action.setErrorIcon(this.card);
                 break;
-            case 'disconnect':
+            case 'DISCONNECT':
                 type = 'danger';
                 text = `disconnected!`;
-                Action.setErrorIcon(this.card);
+                Action.setDisconnectIcon(this.card);
+                break;
+            case 'OPEN_REQUEST':
+                type = 'info';
+                text = `received an OPEN request!`;
+                Action.setLoadingIcon(this.card);
+                break;
+            case 'CLOSE_REQUEST':
+                type = 'info';
+                text = `received an CLOSE request!`;
+                Action.setLoadingIcon(this.card);
                 break;
         }
         const deviceName = this.card.find('.js-device-name').html();
@@ -123,48 +134,76 @@ class RenderAppDashboardMessage {
 class Action {
 
     constructor(appDashboard) {
-        $('.content').on('click','.js-device-card',function () {
+        $('.content').on('click','.js-device-action',function () {
             Action.onClickAction($(this),appDashboard);
         });
     }
 
     static onClickAction(element, appDashboard) {
-        if(element.attr('data-action-pending') === true){
+        if(element.attr('data-action-pending') === 'true'){
             return;
         }
-        Action.setLoadingIcon(element);
         appDashboard.sendData({
-            deviceId : element.attr('data-device-name'),
-            action : Action.getOppositeState(element.data('currentState'))
+            deviceId : element.closest('.js-device-card').attr('data-device-name'),
+            action : Action.getOppositeState(element.attr('data-current-state'))
         });
+        if(Action.getOppositeState(element.attr('data-current-state')) === 'OPEN_REQUEST'){
+            Action.setOpenRequstIcon(element);
+        }else if(Action.getOppositeState(element.attr('data-current-state')) === 'CLOSE_REQUEST'){
+            Action.setCloseRequstIcon(element);
+        }
+
     }
 
-    static setLoadingIcon(element) {
-        element.find('.js-device-action').html('autorenew');
+    static setOpenRequstIcon(element) {
+        element.html('autorenew');
         element.attr('data-action-pending',true);
+        element.attr('data-current-state','OPEN_REQUEST');
+    }
+
+    static setCloseRequstIcon(element) {
+        element.html('autorenew');
+        element.attr('data-action-pending',true);
+        element.attr('data-current-state','CLOSE_REQUEST');
     }
 
     static setOpenIcon(element) {
-        element.find('.js-device-action').html('lock_open');
+        element.html('lock_open');
         element.attr('data-action-pending',false);
+        element.attr('data-current-state','OPEN');
     }
 
     static setLockedIcon(element) {
-        element.find('.js-device-action').html('lock');
+        element.html('lock');
         element.attr('data-action-pending',false);
+        element.attr('data-current-state','CLOSE');
     }
 
     static setErrorIcon(element) {
-        element.find('.js-device-action').html('error');
-        element.attr('data-action-pending',false);
+        element.html('error');
+        element.attr('data-action-pending',true);
+        element.attr('data-current-state','ERROR');
+    }
+
+    static setDisconnectIcon(element) {
+        element.html('mobile_off');
+        element.attr('data-action-pending',true);
+        element.attr('data-current-state','ERROR');
+    }
+
+    static setConnectIcon(element) {
+        element.html('mobile_friendly');
+        element.attr('data-action-pending',true);
+        element.attr('data-current-state','ERROR');
     }
 
     static getOppositeState(state){
-        if(state === 'open'){
-            return 'close';
-        }else {
-            return 'open';
+        if(state === 'OPEN'){
+            return 'CLOSE_REQUEST';
+        }else if(state === 'CLOSE') {
+            return 'OPEN_REQUEST';
         }
+        return null;
     }
 }
 

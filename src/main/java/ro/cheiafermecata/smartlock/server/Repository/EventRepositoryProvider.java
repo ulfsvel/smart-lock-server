@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public class EventRepositoryProvider implements EventRepository {
 
-    private static final Long PAGE_SIZE = 20L;
+    private static final Long PAGE_SIZE = 10L;
 
     private final JdbcTemplate jdbcTemplate;
 

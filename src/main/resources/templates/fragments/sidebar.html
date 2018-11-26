@@ -6,14 +6,14 @@
     </div>
     <div class="sidebar-wrapper">
         <ul class="nav">
-            <li  class="nav-item">
-                <a th:classappend="${#strings.equals(content,'home')} ? 'active' : ''" class="nav-link" href="/">
+            <li th:classappend="${content == 'home'} ? 'active' : ''" class="nav-item">
+                <a class="nav-link" href="/">
                     <i class="material-icons">dashboard</i>
                     <p>Dashboard</p>
                 </a>
             </li>
-            <li class="nav-item">
-                <a th:classappend="${#strings.equals(content,'history')} ? 'active' : ''" class="nav-link" href="/eventHistory">
+            <li th:classappend="${content == 'history'} ? 'active' : ''" class="nav-item">
+                <a class="nav-link" href="/eventHistory">
                     <i class="material-icons">history</i>
                     <p>History</p>
                 </a>

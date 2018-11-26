@@ -17,7 +17,7 @@
                 </tr>
                 </thead>
                 <tbody class="js-device-body">
-                <th:block th:each="event : ${history.getRight()}">
+                <th:block th:each="event : ${history}">
                     <tr>
                         <td class="w-20" th:text="${event.getEventTime()}"></td>
                         <td class="w-20" th:text="${deviceIdToName.get(event.getDeviceId())}"></td>
@@ -28,16 +28,14 @@
                 </tbody>
             </table>
             <div>
-                <th:block th:if="!${pageNumber.equals(1)}">
-                    <a class="btn btn-primary" th:href="${#strings.concat('/eventHistory/', pageNumber-1)}">
+                <th:block th:if="${pageNumber > 1}">
+                    <a class="btn btn-primary" th:href="${'/eventHistory/'+(pageNumber-1)}">
                         <i class="material-icons">keyboard_arrow_left</i>
                     </a>
                 </th:block>
-                <th:block th:if="!${history.getLeft().equals(1)}">
-                    <span th:text="${pageNumber}" class="btn btn-primary"></span>
-                </th:block>
-                <th:block th:if="!${pageNumber.equals(history.getLeft())}">
-                    <a class="btn btn-primary" th:href="${#strings.concat('/eventHistory/', pageNumber+1)}">
+                <span th:text="${pageNumber+'/'+pageCount}" class="btn btn-primary"></span>
+                <th:block th:if="${pageNumber < pageCount}">
+                    <a class="btn btn-primary" th:href="${'/eventHistory/'+(pageNumber+1)}">
                         <i class="material-icons">keyboard_arrow_right</i>
                     </a>
                 </th:block>

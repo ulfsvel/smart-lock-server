@@ -7,7 +7,7 @@
                     <p th:text="${device.getStatus()}" class="card-category js-device-header"></p>
                 </div>
                 <a href="#">
-                    <i style="color: #FFF" class="display-2 material-icons js-device-action">lock</i>
+                    <i th:text="${device.getStatusIcon()}" th:attr="data-action-pending=${device.getStatusPending()},data-current-state=${device.getStatus()}" style="color: #FFF" class="display-2 material-icons js-device-action"></i>
                 </a>
             </div>
             <div class="card-body">

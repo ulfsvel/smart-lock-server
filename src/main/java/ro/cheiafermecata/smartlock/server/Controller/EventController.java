@@ -30,8 +30,13 @@ public class EventController {
     }
 
     @GetMapping("/api/eventHistory/{page}")
-    public Pair<Long,List<Event>> getEventHistory(Principal principal, @PathVariable(name = "page") Long page){
-        return new ImmutablePair<>(eventRepository.getPageCountByUserId(parseLong(principal.getName())),eventRepository.getByUserIdAtPage(parseLong(principal.getName()),page));
+    public List<Event> getEventHistory(Principal principal, @PathVariable(name = "page") Long page){
+        return eventRepository.getByUserIdAtPage(parseLong(principal.getName()),page);
+    }
+
+    @GetMapping("/api/eventHistoryPageCount")
+    public Long getEventHistoryPageCount(Principal principal){
+        return eventRepository.getPageCountByUserId(parseLong(principal.getName()));
     }
 
     @GetMapping("/api/eventHistoryOverview")

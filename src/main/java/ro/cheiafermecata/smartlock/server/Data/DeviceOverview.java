@@ -16,6 +16,14 @@ public class DeviceOverview {
         this.events = events;
     }
 
+    public boolean getStatusPending(){
+        return !this.status.equals(Events.OPEN.toString()) && !this.status.equals(Events.CLOSE.toString());
+    }
+
+    public String getStatusIcon(){
+        return Events.getIcon(Events.valueOf(this.status));
+    }
+
     public Device getDevice() {
         return device;
     }
