@@ -60,45 +60,45 @@ class RenderAppDashboardMessage {
 
     processAction() {
         let type, text;
+        const button = this.card.find('.js-device-action');
         switch (this.message.actionType) {
             case 'CONNECT' :
                 type = 'success';
                 text = `connected!`;
-                Action.setConnectIcon(this.card);
+                Action.setConnectIcon(button);
                 break;
             case 'OPEN' :
                 type = 'info';
                 text = `opened!`;
-                Action.setOpenIcon(this.card);
+                Action.setOpenIcon(button);
                 break;
             case 'CLOSE' :
                 type = 'info';
                 text = `closed!`;
-                Action.setLockedIcon(this.card);
+                Action.setLockedIcon(button);
                 break;
             case 'ERROR' :
                 type = 'danger';
                 text = `was unable to perform an action!`;
-                Action.setErrorIcon(this.card);
+                Action.setErrorIcon(button);
                 break;
             case 'DISCONNECT':
                 type = 'danger';
                 text = `disconnected!`;
-                Action.setDisconnectIcon(this.card);
+                Action.setDisconnectIcon(button);
                 break;
             case 'OPEN_REQUEST':
                 type = 'info';
                 text = `received an OPEN request!`;
-                Action.setLoadingIcon(this.card);
+                Action.setOpenRequestIcon(button);
                 break;
             case 'CLOSE_REQUEST':
                 type = 'info';
                 text = `received an CLOSE request!`;
-                Action.setLoadingIcon(this.card);
+                Action.setCloseRequestIcon(button);
                 break;
         }
-        const deviceName = this.card.find('.js-device-name').html();
-        text = `Device with name [${deviceName}] ` + text;
+        text = `Device with name [${this.message.deviceName}] ` + text;
         RenderAppDashboardMessage.showNotification(type, text);
         this.setStatus();
     }
@@ -148,20 +148,20 @@ class Action {
             action : Action.getOppositeState(element.attr('data-current-state'))
         });
         if(Action.getOppositeState(element.attr('data-current-state')) === 'OPEN_REQUEST'){
-            Action.setOpenRequstIcon(element);
+            Action.setOpenRequestIcon(element);
         }else if(Action.getOppositeState(element.attr('data-current-state')) === 'CLOSE_REQUEST'){
-            Action.setCloseRequstIcon(element);
+            Action.setCloseRequestIcon(element);
         }
 
     }
 
-    static setOpenRequstIcon(element) {
+    static setOpenRequestIcon(element) {
         element.html('autorenew');
         element.attr('data-action-pending',true);
         element.attr('data-current-state','OPEN_REQUEST');
     }
 
-    static setCloseRequstIcon(element) {
+    static setCloseRequestIcon(element) {
         element.html('autorenew');
         element.attr('data-action-pending',true);
         element.attr('data-current-state','CLOSE_REQUEST');

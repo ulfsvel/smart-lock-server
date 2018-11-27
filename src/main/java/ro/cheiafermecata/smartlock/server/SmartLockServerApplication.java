@@ -4,9 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class SmartlockServerApplication {
+public class SmartLockServerApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SmartlockServerApplication.class, args);
+        SpringApplication.run(SmartLockServerApplication.class, args);
     }
 }
