@@ -9,6 +9,8 @@ public class Device {
 
     private Long userId;
 
+    private String name;
+
     public Device(Long userId, String name) {
         this.userId = userId;
         this.name = name;
@@ -19,8 +21,6 @@ public class Device {
         this.userId = userId;
         this.name = name;
     }
-
-    private String name;
 
     public Long getId() {
         return id;

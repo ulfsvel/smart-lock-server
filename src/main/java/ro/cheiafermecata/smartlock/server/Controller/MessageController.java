@@ -4,8 +4,8 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import ro.cheiafermecata.smartlock.server.Data.*;
-import ro.cheiafermecata.smartlock.server.Interfaces.Repository.DeviceRepository;
-import ro.cheiafermecata.smartlock.server.Interfaces.Repository.EventRepository;
+import ro.cheiafermecata.smartlock.server.Repository.DeviceRepository;
+import ro.cheiafermecata.smartlock.server.Repository.EventRepository;
 import java.security.Principal;
 
 
@@ -52,11 +52,11 @@ public class MessageController {
 
     /**
      * Sends the message to the user identified by {userId}
-     * @param principal the logged in device, the format is {userId}-{deviceId}
+     * @param principal the logged in device, the format is {userId}-{deviceId} (called only from ws)
      * @param message the message to send to the user
      */
-    @MessageMapping("/sendToUsers")
-    public void sendToUsers(Principal principal, SendToUsersMessage message) {
+    @MessageMapping("/sendToUsersAsDevice")
+    public void sendToUsersAsDevice(Principal principal, SendToUsersMessage message) {
         String[] principalUserIdDeviceId = principal.getName().split("-");
         Long userId = Long.parseLong(principalUserIdDeviceId[0]);
         Long deviceId = Long.parseLong(principalUserIdDeviceId[1]);
@@ -67,6 +67,21 @@ public class MessageController {
             messagingTemplate.convertAndSendToUser(userId.toString(), "/devicesData/influx", message);
         }catch (IllegalArgumentException e){
             eventRepository.save(new Event(userId,message.getDeviceId(),Events.ERROR.toString(), "Invalid action exception"));
+            messagingTemplate.convertAndSendToUser(principal.getName(), "/devicesData/influx", message);
+        }
+    }
+
+    /**
+     * Sends the message to the user identified by {userId}
+     * @param principal the logged in user, the format is {userId}
+     * @param message the message to send to the user
+     */
+    void sendToUsersAsUser(Principal principal, SendToUsersMessage message){
+        try{
+            eventRepository.save(new Event(Long.parseLong(principal.getName()),message.getDeviceId(), Events.valueOf(message.getActionType()).toString(), message.getActionContent(),message.getTime()));
+            messagingTemplate.convertAndSendToUser(principal.getName(), "/devicesData/influx", message);
+        }catch (IllegalArgumentException e){
+            eventRepository.save(new Event(Long.parseLong(principal.getName()),message.getDeviceId(),Events.ERROR.toString(), "Invalid action exception"));
             messagingTemplate.convertAndSendToUser(principal.getName(), "/devicesData/influx", message);
         }
     }

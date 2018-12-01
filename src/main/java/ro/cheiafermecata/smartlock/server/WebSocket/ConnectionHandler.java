@@ -14,7 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import ro.cheiafermecata.smartlock.server.Repository.UserDetailServiceProvider;
+import ro.cheiafermecata.smartlock.server.Repository.Implementations.UserDetailServiceProvider;
 
 import java.security.Principal;
 

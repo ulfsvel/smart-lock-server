@@ -1,7 +1,7 @@
 package ro.cheiafermecata.smartlock.server.Data;
 
 public enum Events {
-    OPEN, CLOSE, ERROR, DISCONNECT, CONNECT, OPEN_REQUEST,CLOSE_REQUEST;
+    OPEN, CLOSE, ERROR, DISCONNECT, CONNECT, OPEN_REQUEST,CLOSE_REQUEST, NEW;
 
     public static String getIcon(Events event) {
         switch (event) {
@@ -19,6 +19,8 @@ public enum Events {
             case OPEN_REQUEST:
             case CLOSE_REQUEST:
                 return "autorenew";
+            case NEW:
+                return "fiber_new";
         }
     }
 }

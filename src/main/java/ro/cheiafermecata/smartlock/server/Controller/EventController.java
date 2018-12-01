@@ -1,15 +1,13 @@
 package ro.cheiafermecata.smartlock.server.Controller;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 import ro.cheiafermecata.smartlock.server.Data.Device;
 import ro.cheiafermecata.smartlock.server.Data.DeviceOverview;
 import ro.cheiafermecata.smartlock.server.Data.Event;
-import ro.cheiafermecata.smartlock.server.Interfaces.Repository.DeviceRepository;
-import ro.cheiafermecata.smartlock.server.Interfaces.Repository.EventRepository;
+import ro.cheiafermecata.smartlock.server.Repository.DeviceRepository;
+import ro.cheiafermecata.smartlock.server.Repository.EventRepository;
 
 import java.security.Principal;
 import java.util.LinkedList;
@@ -17,7 +15,7 @@ import java.util.List;
 
 import static java.lang.Long.parseLong;
 
-@Controller
+@RestController
 public class EventController {
 
     private final EventRepository eventRepository;

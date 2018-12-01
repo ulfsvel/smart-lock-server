@@ -1,9 +1,9 @@
-package ro.cheiafermecata.smartlock.server.Repository;
+package ro.cheiafermecata.smartlock.server.Repository.Implementations;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ro.cheiafermecata.smartlock.server.Data.User;
-import ro.cheiafermecata.smartlock.server.Interfaces.Repository.UserRepository;
+import ro.cheiafermecata.smartlock.server.Repository.UserRepository;
 
 
 @Repository
@@ -19,7 +19,7 @@ public class UserRepositoryProvider implements UserRepository {
     @Override
     public User getByEmail(String email){
         return jdbcTemplate.queryForObject(
-                "SELECT id, email, password FROM users WHERE email = ? AND ROWNUM = 1", new Object[] { email },
+                "SELECT `ID`, `EMAIL`, `PASSWORD` FROM `USERS` WHERE `EMAIL` = ? LIMIT 1", new Object[] { email },
                 (rs, rowNum) -> new User(rs.getLong("id"), rs.getString("email"), rs.getString("password"))
         );
     }
@@ -27,7 +27,7 @@ public class UserRepositoryProvider implements UserRepository {
     @Override
     public User getById(Long id){
         return jdbcTemplate.queryForObject(
-                "SELECT id, email, password FROM users WHERE id = ? AND ROWNUM = 1", new Object[] { id },
+                "SELECT `ID`, `EMAIL`, `PASSWORD` FROM `USERS` WHERE `ID` = ? LIMIT 1", new Object[] { id },
                 (rs, rowNum) -> new User(rs.getLong("id"), rs.getString("email"), rs.getString("password"))
         );
     }

@@ -1,4 +1,4 @@
-package ro.cheiafermecata.smartlock.server.Interfaces.Repository;
+package ro.cheiafermecata.smartlock.server.Repository;
 
 import org.springframework.stereotype.Repository;
 import ro.cheiafermecata.smartlock.server.Data.Device;
@@ -11,5 +11,7 @@ public interface DeviceRepository {
     List<Device> getByUserId(Long id);
 
     Device getById(Long id);
+
+    Long save(Device device);
 
 }

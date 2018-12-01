@@ -4,8 +4,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ro.cheiafermecata.smartlock.server.Data.Device;
-import ro.cheiafermecata.smartlock.server.Interfaces.Repository.DeviceRepository;
-import ro.cheiafermecata.smartlock.server.Interfaces.Repository.UserRepository;
+import ro.cheiafermecata.smartlock.server.Repository.UserRepository;
 
 import java.security.Principal;
 import java.util.HashMap;

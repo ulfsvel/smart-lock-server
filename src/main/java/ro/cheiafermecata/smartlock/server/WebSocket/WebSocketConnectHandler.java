@@ -22,7 +22,7 @@ public class WebSocketConnectHandler implements ApplicationListener<SessionConne
     public void onApplicationEvent(SessionConnectEvent sessionConnectEvent) {
         Principal principal = sessionConnectEvent.getUser();
         if(principal != null && principal.getName().contains("-")){
-            messageController.sendToUsers(
+            messageController.sendToUsersAsDevice(
                     principal,
                     new SendToUsersMessage(
                             Events.CONNECT.toString(),

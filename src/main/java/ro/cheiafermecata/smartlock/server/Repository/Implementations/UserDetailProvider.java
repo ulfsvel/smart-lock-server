@@ -1,4 +1,4 @@
-package ro.cheiafermecata.smartlock.server.Repository;
+package ro.cheiafermecata.smartlock.server.Repository.Implementations;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

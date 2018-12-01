@@ -1,4 +1,4 @@
-package ro.cheiafermecata.smartlock.server.Interfaces.Repository;
+package ro.cheiafermecata.smartlock.server.Repository;
 
 import org.springframework.stereotype.Repository;
 import ro.cheiafermecata.smartlock.server.Data.Event;

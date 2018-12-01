@@ -1,4 +1,4 @@
-package ro.cheiafermecata.smartlock.server.Repository;
+package ro.cheiafermecata.smartlock.server.Repository.Implementations;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import ro.cheiafermecata.smartlock.server.Data.User;
-import ro.cheiafermecata.smartlock.server.Interfaces.Repository.UserRepository;
+import ro.cheiafermecata.smartlock.server.Repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;

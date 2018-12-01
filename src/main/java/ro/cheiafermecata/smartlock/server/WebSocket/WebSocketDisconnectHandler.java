@@ -22,7 +22,7 @@ public class WebSocketDisconnectHandler implements ApplicationListener<SessionDi
     public void onApplicationEvent(SessionDisconnectEvent sessionDisconnectEvent) {
         Principal principal = sessionDisconnectEvent.getUser();
         if(principal != null && principal.getName().contains("-")){
-            messageController.sendToUsers(
+            messageController.sendToUsersAsDevice(
                     principal,
                     new SendToUsersMessage(
                             Events.DISCONNECT.toString(),
