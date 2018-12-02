@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:replace="fragments/account/head"></head>
+<body>
+<div class="d-flex justify-content-center">
+    <div th:include="${#strings.concat('fragments/account/content/', content)}"></div>
+</div>
+<div th:replace="fragments/account/footer"></div>
+</body>
+</html>

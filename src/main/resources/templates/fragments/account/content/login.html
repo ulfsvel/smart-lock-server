@@ -1,0 +1,38 @@
+<div xmlns:th="http://www.thymeleaf.org" style="width:300px;" class="card">
+    <div class="card-header card-header-primary">
+        <h4 class="card-title">Login</h4>
+    </div>
+    <div class="card-body">
+        <form th:action="@{/j_spring_security_check}" method="post">
+            <th:block th:if="${error != null}">
+                <div class="row justify-content-center">
+                    <div class="col-10">
+                        <div th:text="${error}" class="alert alert-danger" role="alert"></div>
+                    </div>
+                </div>
+            </th:block>
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group bmd-form-group">
+                        <label for="username" class="bmd-label-floating">Username</label>
+                        <input id="username" type="text" name="username" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group bmd-form-group">
+                        <label for="password" class="bmd-label-floating">Password</label>
+                        <input id="password" type="password" name="password" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary float-right">Submit</button>
+                </div>
+            </div>
+            <a th:href="@{/account/register}">Don't have an account? Register</a>
+        </form>
+    </div>
+</div>

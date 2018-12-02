@@ -30,7 +30,7 @@ public class HomeController {
         model.put("content","home");
         model.put("devices",eventController.getEventHistoryOverview(principal));
         model.put("user",userRepository.getById(Long.parseLong(principal.getName())));
-        return "index";
+        return "dashboard";
     }
 
     @RequestMapping({"/eventHistory/{page}","/eventHistory"})
@@ -48,7 +48,7 @@ public class HomeController {
         model.put("deviceIdToName",deviceIdToName);
         model.put("history",eventController.getEventHistory(principal,page));
         model.put("pageCount",pageCount);
-        return "index";
+        return "dashboard";
     }
 
     private static Long preparePageNumber(Long pageNumber, Long pageCount){

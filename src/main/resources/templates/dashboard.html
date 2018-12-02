@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+    <head th:replace="fragments/dashboard/head"></head>
+<body class="">
+<div class="wrapper">
+    <div th:replace="fragments/dashboard/sidebar"></div>
+    <div class="main-panel">
+        <nav th:replace="fragments/dashboard/navbar"></nav>
+        <div class="content">
+            <div th:include="${#strings.concat('fragments/dashboard/content/', content)}" class="container-fluid">
+
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="fragments/dashboard/footer"></div>
+</body>
+</html>

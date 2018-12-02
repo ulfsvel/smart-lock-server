@@ -1,26 +1,21 @@
 package ro.cheiafermecata.smartlock.server.Data;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Table;
-import javax.validation.constraints.NotBlank;
-
-@Entity
-@Table(name = "users")
 public class User {
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     private Long id;
 
-    @NotBlank
     private String email;
 
-    @NotBlank
     private String password;
 
     public User(Long id, String email, String password){
         setId(id);
+        setEmail(email);
+        setPassword(password);
+    }
+
+    public User(String email, String password){
         setEmail(email);
         setPassword(password);
     }

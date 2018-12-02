@@ -10,4 +10,6 @@ public interface UserRepository {
 
     User getById(Long id);
 
+    Long save(User user);
+
 }
