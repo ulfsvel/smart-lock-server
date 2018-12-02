@@ -22,17 +22,17 @@ public class DeviceController {
         this.messageController = messageController;
     }
 
-    @RequestMapping("/api/deviceDetails/{deviceId}")
+    @GetMapping("/api/deviceDetails/{deviceId}")
     public Device getDevice(@PathVariable("deviceId") Long deviceId) {
         return deviceRepository.getById(deviceId);
     }
 
-    @RequestMapping("/api/deviceDetails")
+    @GetMapping("/api/deviceDetails")
     public List<Device> getDevices(Principal principal) {
         return deviceRepository.getByUserId(Long.parseLong(principal.getName()));
     }
 
-    @RequestMapping("/api/deviceDetails/new")
+    @PostMapping("/api/deviceDetails/new")
     public Device saveDevice(Principal principal, @RequestParam("name") String deviceName) {
         Device device = new Device(
                 Long.parseLong(principal.getName()),
@@ -51,19 +51,24 @@ public class DeviceController {
         return device;
     }
 
-    @RequestMapping("/api/deviceDetails/rename")
+    @PostMapping("/api/deviceDetails/rename")
     public Device renameDevice(
             Principal principal,
             @RequestParam("name") String deviceName,
             @RequestParam("id") Long deviceId
     ) {
         Device device = deviceRepository.getById(deviceId);
-        if(!device.getUserId().toString().equals(principal.getName())){
+        if (!device.getUserId().toString().equals(principal.getName())) {
             return device;
         }
         device.setName(deviceName);
         device.setId(deviceRepository.save(device));
         return device;
+    }
+
+    @GetMapping("/api/deviceDetails/auth")
+    public Boolean authenticateDevice() {
+        return true;
     }
 
 }

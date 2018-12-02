@@ -38,7 +38,7 @@ public class DeviceRepositoryProvider implements DeviceRepository {
 
     @Override
     public Long save(Device device) {
-        if(device.getUserId() == null){
+        if(device.getId() == null){
             GeneratedKeyHolder holder = new GeneratedKeyHolder();
             jdbcTemplate.update(con -> {
                 PreparedStatement statement = con.prepareStatement("INSERT INTO `DEVICES`(`USER_ID`, `NAME`) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);

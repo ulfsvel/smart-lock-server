@@ -31,6 +31,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     public static class ApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
         protected void configure(HttpSecurity http) throws Exception {
             http
+                    .csrf().disable()
                     .antMatcher("/api/**")
                     .authorizeRequests()
                     .anyRequest().authenticated()
@@ -71,6 +72,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .permitAll()
                     .and()
                     .logout()
+                    .logoutUrl("/logout")
+                    .logoutSuccessUrl("/login?logout")
                     .permitAll();
         }
 

@@ -21,13 +21,17 @@ public class AccountController {
     public String showLoginAction(
             Map<String, Object> model,
             @RequestParam(name = "error", required = false) String error,
-            @RequestParam(name = "success", required = false) String success
+            @RequestParam(name = "success", required = false) String success,
+            @RequestParam(name = "logout", required = false) String logout
     ) {
         if (error != null) {
             model.put("error", "Authentication failed");
         }
         if (success != null) {
             model.put("success", "Account created");
+        }
+        if (success != null) {
+            model.put("success", "Logout successful");
         }
         model.put("content", "login");
         return "account";
