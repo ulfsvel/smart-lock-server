@@ -3,7 +3,7 @@
         <h4 class="card-title">Register</h4>
     </div>
     <div class="card-body">
-        <form th:action="@{/j_spring_security_check}" method="post">
+        <form th:action="@{/account/register}" method="post">
             <th:block th:if="${error != null}">
                 <div class="row justify-content-center">
                     <div class="col-10">
@@ -40,7 +40,7 @@
                     <button type="submit" class="btn btn-primary float-right">Submit</button>
                 </div>
             </div>
-            <a th:href="@{/account/register}">Have an account? Login</a>
+            <a th:href="@{/account/login}">Have an account? Login</a>
         </form>
     </div>
 </div>
