@@ -32,6 +32,9 @@ public class ConnectionHandler implements ChannelInterceptor {
         this.userDetailServiceProvider = userDetailServiceProvider;
     }
 
+    /**
+     * Intercepts WS connection request and checks the security headers
+     */
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
 

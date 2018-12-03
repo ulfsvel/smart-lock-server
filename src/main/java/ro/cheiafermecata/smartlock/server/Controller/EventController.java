@@ -27,24 +27,40 @@ public class EventController {
         this.deviceRepository = deviceRepository;
     }
 
+    /**
+     * Gets the event history ap page {page} for the logged in user
+     * @param principal the logged in user
+     * @param page the page number
+     * @return a List of Events
+     */
     @GetMapping("/api/eventHistory/{page}")
     public List<Event> getEventHistory(Principal principal, @PathVariable(name = "page") Long page){
         return eventRepository.getByUserIdAtPage(parseLong(principal.getName()),page);
     }
 
+    /**
+     * Gets the page count for the logged in user
+     * @param principal the logged in user
+     * @return the page count
+     */
     @GetMapping("/api/eventHistoryPageCount")
     public Long getEventHistoryPageCount(Principal principal){
         return eventRepository.getPageCountByUserId(parseLong(principal.getName()));
     }
 
+    /**
+     * Return the devices that belong to the logged in user the last and the latest events for them
+     * @param principal the logged in user
+     * @return a List of DeviceOverview(one per device)
+     */
     @GetMapping("/api/eventHistoryOverview")
     public List<DeviceOverview> getEventHistoryOverview(Principal principal){
         List<DeviceOverview> devices = new LinkedList<>();
         for (Device device: deviceRepository.getByUserId(parseLong(principal.getName()))) {
-            List<Event> events = eventRepository.getLatestByDeviceId(device.getId(),5);
+            List<Event> events = eventRepository.getLatestByDeviceId(device.getId());
             devices.add(new DeviceOverview(
                     device,
-                    events.isEmpty() ? "New Device" : events.get(0).getEvent(),
+                    events.get(0).getEvent(),
                     events
             ));
         }

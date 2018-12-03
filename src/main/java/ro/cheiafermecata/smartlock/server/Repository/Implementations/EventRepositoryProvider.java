@@ -13,6 +13,8 @@ import java.util.List;
 public class EventRepositoryProvider implements EventRepository {
 
     private static final Long PAGE_SIZE = 10L;
+    
+    private static final Long OVERVIEW_SIZE = 5L;
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -32,9 +34,9 @@ public class EventRepositoryProvider implements EventRepository {
         );
     }
 
-    public List<Event> getLatestByDeviceId(Long deviceId, int limit) {
+    public List<Event> getLatestByDeviceId(Long deviceId) {
         return jdbcTemplate.query(
-                "SELECT `ID`, `USER_ID`, `DEVICE_ID`, `EVENT`, `DESCRIPTION`, `EVENT_TIME` FROM `EVENTS` WHERE `DEVICE_ID` = ? ORDER BY ID DESC LIMIT ?", new Object[]{deviceId, limit},
+                "SELECT `ID`, `USER_ID`, `DEVICE_ID`, `EVENT`, `DESCRIPTION`, `EVENT_TIME` FROM `EVENTS` WHERE `DEVICE_ID` = ? ORDER BY ID DESC LIMIT ?", new Object[]{deviceId, OVERVIEW_SIZE},
                 this::mapToEvent
         );
     }

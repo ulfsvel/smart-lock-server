@@ -17,6 +17,14 @@ public class AccountController {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Show the login form and some predefined messages if any
+     * @param model data to send to the view
+     * @param error true if there is an error
+     * @param success true if account was created
+     * @param logout true if logout successful
+     * @return template name
+     */
     @RequestMapping("/account/login")
     public String showLoginAction(
             Map<String, Object> model,
@@ -30,19 +38,32 @@ public class AccountController {
         if (success != null) {
             model.put("success", "Account created");
         }
-        if (success != null) {
-            model.put("success", "Logout successful");
+        if (logout != null) {
+            model.put("logout", "Logout successful");
         }
         model.put("content", "login");
         return "account";
     }
 
+    /**
+     * Shows the registration page
+     * @param model the data to send to the view
+     * @return the template name
+     */
     @GetMapping("/account/register")
     public String showRegisterAction(Map<String, Object> model) {
         model.put("content", "register");
         return "account";
     }
 
+    /**
+     * Performs the registration and shows errors if any
+     * @param model the data to send to the view
+     * @param username the users email address
+     * @param password the users password
+     * @param repassword the password check, must match with password
+     * @return template name
+     */
     @PostMapping("/account/register")
     public String doRegisterAction(
             Map<String, Object> model,

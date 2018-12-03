@@ -18,6 +18,10 @@ public class WebSocketDisconnectHandler implements ApplicationListener<SessionDi
         this.messageController = messageController;
     }
 
+    /**
+     * Intercepts DISCONNECT Events and persists them
+     * @param sessionDisconnectEvent the DISCONNECT Event
+     */
     @Override
     public void onApplicationEvent(SessionDisconnectEvent sessionDisconnectEvent) {
         Principal principal = sessionDisconnectEvent.getUser();

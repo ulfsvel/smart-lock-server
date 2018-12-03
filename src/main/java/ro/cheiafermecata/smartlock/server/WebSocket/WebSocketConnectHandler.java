@@ -18,6 +18,10 @@ public class WebSocketConnectHandler implements ApplicationListener<SessionConne
         this.messageController = messageController;
     }
 
+    /**
+     * Intercepts CONNECT events and persists them
+     * @param sessionConnectEvent the CONNECT EVENT
+     */
     @Override
     public void onApplicationEvent(SessionConnectEvent sessionConnectEvent) {
         Principal principal = sessionConnectEvent.getUser();

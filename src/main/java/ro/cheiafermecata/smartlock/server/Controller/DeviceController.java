@@ -22,16 +22,37 @@ public class DeviceController {
         this.messageController = messageController;
     }
 
+    /**
+     * Returns a Device object for the device with id {deviceId}
+     * @param principal the logged in user
+     * @param deviceId the id of a device
+     * @return the device with id = {deviceId}
+     */
     @GetMapping("/api/deviceDetails/{deviceId}")
-    public Device getDevice(@PathVariable("deviceId") Long deviceId) {
-        return deviceRepository.getById(deviceId);
+    public Device getDevice(Principal principal,@PathVariable("deviceId") Long deviceId) {
+        Device device = deviceRepository.getById(deviceId);
+        if(device.getUserId().equals(Long.parseLong(principal.getName()))){
+            return device;
+        }
+        return null;
     }
 
+    /**
+     * Returns a List of devices for the logged in user
+     * @param principal the logged in user
+     * @return the devices that belong to the user
+     */
     @GetMapping("/api/deviceDetails")
     public List<Device> getDevices(Principal principal) {
         return deviceRepository.getByUserId(Long.parseLong(principal.getName()));
     }
 
+    /**
+     * Creates a new device with name {deviceName} for the logged in user
+     * @param principal the logged in user
+     * @param deviceName the name of the device to create
+     * @return the created Device
+     */
     @PostMapping("/api/deviceDetails/new")
     public Device saveDevice(Principal principal, @RequestParam("name") String deviceName) {
         Device device = new Device(
@@ -51,6 +72,13 @@ public class DeviceController {
         return device;
     }
 
+    /**
+     * Renames the device with id = {deviceId} to {deviceName}
+     * @param principal the logged in user
+     * @param deviceName the new name for the device
+     * @param deviceId the id of the device
+     * @return the edited Device
+     */
     @PostMapping("/api/deviceDetails/rename")
     public Device renameDevice(
             Principal principal,
@@ -66,6 +94,10 @@ public class DeviceController {
         return device;
     }
 
+    /**
+     * Checks if a successful login was performed
+     * @return true
+     */
     @GetMapping("/api/deviceDetails/auth")
     public Boolean authenticateDevice() {
         return true;
