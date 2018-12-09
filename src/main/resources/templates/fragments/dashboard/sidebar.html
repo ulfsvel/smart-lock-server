@@ -1,4 +1,4 @@
-<div xmlns:th="http://www.thymeleaf.org" class="sidebar" data-color="purple" data-background-color="white">
+<div xmlns:th="http://www.thymeleaf.org" class="sidebar" data-color="purple">
     <div class="logo">
         <a href="http://www.creative-tim.com" class="simple-text logo-normal">
             Smart Lock
@@ -18,13 +18,7 @@
                     <p>History</p>
                 </a>
             </li>
-            <li th:classappend="${content == 'history'} ? 'active' : ''" class="nav-item">
-                <a class="nav-link" href="/eventHistory">
-                    <i class="material-icons">history</i>
-                    <p>History</p>
-                </a>
-            </li>
-            <li th:classappend="${content == 'history'} ? 'active' : ''" class="nav-item">
+            <li class="nav-item">
                 <form class="row justify-content-center" th:action="@{/logout}" method="post">
                     <input th:href="@{/logout}" type="submit" value="Logout" class="btn btn-danger col-10">
                 </form>

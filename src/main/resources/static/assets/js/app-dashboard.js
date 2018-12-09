@@ -1,6 +1,5 @@
 const subscribeUrl = '/user/devicesData/influx';
 const wsUrl = '/ws';
-const infoUrl = '/api/deviceDetails/';
 const sendUrl = '/app/sendToDevices';
 
 class AppDashboard {
@@ -32,29 +31,43 @@ class AppDashboard {
 
 class RenderAppDashboardMessage {
 
-    constructor(infoUrl) {
-        this.infoUrl = infoUrl;
+    constructor() {
         this.card = null;
     }
 
     setMessage(message) {
         this.message = message;
-        if (this.message.actionType === 'new') {
-            const baseClass = this;
-            $.get({
-                url: this.infoUrl + baseClass.message.deviceId,
-                data: {},
-                dataType: 'json',
-            }).done(function (data) {
-                $(".js-devices-container").append(data.card);
-                baseClass.card = $('[data-device-name="' + data.deviceId + '"]');
-                baseClass.processAction();
-            });
-
-        }else{
-            this.card = $('[data-device-name="' + this.message.deviceId + '"]');
-            this.processAction();
+        if (this.message.actionType === 'NEW') {
+            const device = `<div data-device-name="${this.message.deviceId}" class="card js-device-card">
+    <div class="d-flex justify-content-between card-header card-header-primary">
+        <div>
+            <h4 class="card-title js-device-name">${this.message.deviceName}</h4>
+            <p class="card-category js-device-header">NEW</p>
+        </div>
+        <a href="#">
+            <i data-action-pending="true" data-current-state="ERROR" style="color: #FFF" class="display-2 material-icons js-device-action">fiber_new</i>
+        </a>
+    </div>
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead class="text-warning">
+            <tr>
+                <th class="w-20 text-justify">Time</th>
+                <th class="w-30 text-justify">Action</th>
+                <th class="w-50 text-justify">Description</th>
+            </tr>
+            </thead>
+            <tbody class="js-device-body">
+            </tbody>
+        </table>
+    </div>
+</div>`;
+            $('.js-no-devices').remove();
+            $('.js-devices-container').append(device);
         }
+        this.card = $('[data-device-name="' + this.message.deviceId + '"]');
+        this.processAction();
+
         console.log(message);
     }
 
@@ -62,6 +75,10 @@ class RenderAppDashboardMessage {
         let type, text;
         const button = this.card.find('.js-device-action');
         switch (this.message.actionType) {
+            case 'NEW' :
+                type = 'success';
+                text = `created`;
+                break;
             case 'CONNECT' :
                 type = 'success';
                 text = `connected!`;
@@ -134,22 +151,22 @@ class RenderAppDashboardMessage {
 class Action {
 
     constructor(appDashboard) {
-        $('.content').on('click','.js-device-action',function () {
-            Action.onClickAction($(this),appDashboard);
+        $('.content').on('click', '.js-device-action', function () {
+            Action.onClickAction($(this), appDashboard);
         });
     }
 
     static onClickAction(element, appDashboard) {
-        if(element.attr('data-action-pending') === 'true'){
+        if (element.attr('data-action-pending') === 'true') {
             return;
         }
         appDashboard.sendData({
-            deviceId : element.closest('.js-device-card').attr('data-device-name'),
-            action : Action.getOppositeState(element.attr('data-current-state'))
+            deviceId: element.closest('.js-device-card').attr('data-device-name'),
+            action: Action.getOppositeState(element.attr('data-current-state'))
         });
-        if(Action.getOppositeState(element.attr('data-current-state')) === 'OPEN_REQUEST'){
+        if (Action.getOppositeState(element.attr('data-current-state')) === 'OPEN_REQUEST') {
             Action.setOpenRequestIcon(element);
-        }else if(Action.getOppositeState(element.attr('data-current-state')) === 'CLOSE_REQUEST'){
+        } else if (Action.getOppositeState(element.attr('data-current-state')) === 'CLOSE_REQUEST') {
             Action.setCloseRequestIcon(element);
         }
 
@@ -157,55 +174,55 @@ class Action {
 
     static setOpenRequestIcon(element) {
         element.html('autorenew');
-        element.attr('data-action-pending',true);
-        element.attr('data-current-state','OPEN_REQUEST');
+        element.attr('data-action-pending', true);
+        element.attr('data-current-state', 'OPEN_REQUEST');
     }
 
     static setCloseRequestIcon(element) {
         element.html('autorenew');
-        element.attr('data-action-pending',true);
-        element.attr('data-current-state','CLOSE_REQUEST');
+        element.attr('data-action-pending', true);
+        element.attr('data-current-state', 'CLOSE_REQUEST');
     }
 
     static setOpenIcon(element) {
         element.html('lock_open');
-        element.attr('data-action-pending',false);
-        element.attr('data-current-state','OPEN');
+        element.attr('data-action-pending', false);
+        element.attr('data-current-state', 'OPEN');
     }
 
     static setLockedIcon(element) {
         element.html('lock');
-        element.attr('data-action-pending',false);
-        element.attr('data-current-state','CLOSE');
+        element.attr('data-action-pending', false);
+        element.attr('data-current-state', 'CLOSE');
     }
 
     static setErrorIcon(element) {
         element.html('error');
-        element.attr('data-action-pending',true);
-        element.attr('data-current-state','ERROR');
+        element.attr('data-action-pending', true);
+        element.attr('data-current-state', 'ERROR');
     }
 
     static setDisconnectIcon(element) {
         element.html('mobile_off');
-        element.attr('data-action-pending',true);
-        element.attr('data-current-state','ERROR');
+        element.attr('data-action-pending', true);
+        element.attr('data-current-state', 'ERROR');
     }
 
     static setConnectIcon(element) {
         element.html('mobile_friendly');
-        element.attr('data-action-pending',true);
-        element.attr('data-current-state','ERROR');
+        element.attr('data-action-pending', true);
+        element.attr('data-current-state', 'ERROR');
     }
 
-    static getOppositeState(state){
-        if(state === 'OPEN'){
+    static getOppositeState(state) {
+        if (state === 'OPEN') {
             return 'CLOSE_REQUEST';
-        }else if(state === 'CLOSE') {
+        } else if (state === 'CLOSE') {
             return 'OPEN_REQUEST';
         }
         return null;
     }
 }
 
-const appDashboard = new AppDashboard(Stomp, wsUrl, subscribeUrl, sendUrl, new RenderAppDashboardMessage(infoUrl));
+const appDashboard = new AppDashboard(Stomp, wsUrl, subscribeUrl, sendUrl, new RenderAppDashboardMessage());
 const action = new Action(appDashboard);

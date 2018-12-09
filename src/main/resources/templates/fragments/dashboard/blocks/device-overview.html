@@ -1,0 +1,31 @@
+<div xmlns:th="http://www.thymeleaf.org" th:attr="data-device-name=${device.getDevice().getId()}" class="card js-device-card">
+    <div class="d-flex justify-content-between card-header card-header-primary">
+        <div>
+            <h4 th:text="${device.getDevice().getName()}" class="card-title js-device-name"></h4>
+            <p th:text="${device.getStatus()}" class="card-category js-device-header"></p>
+        </div>
+        <a href="#">
+            <i th:text="${device.getStatusIcon()}" th:attr="data-action-pending=${device.getStatusPending()},data-current-state=${device.getStatus()}" style="color: #FFF" class="display-2 material-icons js-device-action"></i>
+        </a>
+    </div>
+    <div class="card-body">
+        <table class="table table-hover">
+            <thead class="text-warning">
+            <tr>
+                <th class="w-20 text-justify">Time</th>
+                <th class="w-30 text-justify">Action</th>
+                <th class="w-50 text-justify">Description</th>
+            </tr>
+            </thead>
+            <tbody class="js-device-body">
+            <th:block th:each="event : ${device.getEvents()}">
+                <tr>
+                    <td class="w-20" th:text="${event.getEventTime()}"></td>
+                    <td class="w-30" th:text="${event.getEvent()}"></td>
+                    <td class="w-50" th:text="${event.getDescription()}"></td>
+                </tr>
+            </th:block>
+            </tbody>
+        </table>
+    </div>
+</div>

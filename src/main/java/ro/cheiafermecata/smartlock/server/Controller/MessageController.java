@@ -35,6 +35,7 @@ public class MessageController {
         try{
             eventRepository.save(new Event(device.getUserId(),message.getDeviceId(),Events.valueOf(message.getAction()).toString(), message.getAction(),message.getTime()));
             messagingTemplate.convertAndSendToUser(principal.getName()+"-"+message.getDeviceId(), "/usersData/influx", message);
+            messagingTemplate.convertAndSendToUser(principal.getName(), "/devicesData/influx", new SendToUsersMessage(message.getAction(),message.getAction(),device.getId(),device.getName()));
         }catch (IllegalArgumentException e){
             eventRepository.save(new Event(device.getUserId(),message.getDeviceId(),Events.ERROR.toString(), "Invalid action exception"));
             messagingTemplate.convertAndSendToUser(
@@ -55,7 +56,7 @@ public class MessageController {
      * @param principal the logged in device, the format is {userId}-{deviceId} (called only from ws)
      * @param message the message to send to the user
      */
-    @MessageMapping("/sendToUsersAsDevice")
+    @MessageMapping("/sendToUsers")
     public void sendToUsersAsDevice(Principal principal, SendToUsersMessage message) {
         String[] principalUserIdDeviceId = principal.getName().split("-");
         Long userId = Long.parseLong(principalUserIdDeviceId[0]);
